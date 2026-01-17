@@ -215,35 +215,43 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
       main { padding: 24px 16px; }
       .section-title { font-size: 16px; }
       
-      .skill-card { padding: 16px; }
+      .skill-card { padding: 16px; overflow: hidden; }
       .skill-header { flex-wrap: wrap; gap: 8px; }
-      .skill-icon { width: 32px; height: 32px; }
+      .skill-icon { width: 32px; height: 32px; flex-shrink: 0; }
       .skill-icon img { width: 24px; height: 24px; }
-      .skill-title { min-width: 0; }
-      .skill-title h3 { font-size: 14px; }
+      .skill-title { min-width: 0; flex: 1; }
+      .skill-title h3 { font-size: 14px; word-break: break-word; }
       
+      .skill-desc { word-break: break-word; }
+      .skill-deps { flex-wrap: wrap; }
       .skill-triggers { gap: 4px; }
       .trigger { font-size: 8px; padding: 2px 6px; }
       
-      .install-tabs { flex-wrap: wrap; }
-      .level-tabs .tab-btn { flex: 1; text-align: center; min-width: 0; }
-      .platform-tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
-      .platform-tabs .tab-btn { flex-shrink: 0; }
+      .install-section { overflow: hidden; }
+      .install-tabs { flex-wrap: nowrap; width: 100%; }
+      .level-tabs { display: flex; }
+      .level-tabs .tab-btn { flex: 1; text-align: center; min-width: 0; padding: 8px 4px; font-size: 10px; }
+      .platform-tabs { display: flex; width: 100%; }
+      .platform-tabs .tab-btn { flex: 1; min-width: 0; border-radius: 0; border-left: none; text-align: center; padding: 6px 2px; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .platform-tabs .tab-btn:first-child { border-radius: 4px 0 0 4px; border-left: 1px solid var(--gray-200); }
+      .platform-tabs .tab-btn:last-child { border-radius: 0 4px 4px 0; }
       
       .install-cmd { flex-direction: column; gap: 8px; }
-      .install-cmd code { width: 100%; font-size: 9px; padding: 10px; overflow-x: auto; white-space: nowrap; }
+      .install-cmd code { width: 100%; font-size: 8px; padding: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; display: block; }
       .install-cmd .copy-btn { width: 100%; padding: 10px; }
       
-      .commands-list code { font-size: 9px; white-space: nowrap; }
+      .commands-list code { font-size: 9px; white-space: nowrap; overflow-x: auto; display: block; }
       
       footer { padding: 20px 16px; }
       footer p { font-size: 10px; }
     }
     
-    @media (max-width: 380px) {
+    @media (max-width: 400px) {
       h1 { font-size: 20px; }
       .skill-title h3 { font-size: 13px; }
-      .platform-tabs .tab-btn { padding: 4px 8px; font-size: 8px; }
+      .platform-tabs .tab-btn { padding: 6px 1px; font-size: 7px; }
+      .level-tabs .tab-btn { font-size: 9px; padding: 8px 4px; }
+      .install-cmd code { font-size: 7px; }
     }
   </style>
 </head>
