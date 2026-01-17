@@ -48,6 +48,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
               <h3>${s.name}</h3>
               <span class="version">v${s.version}</span>
             </div>
+            ${s.auth.required ? `<span class="auth-tag paid">API Key</span>` : `<span class="auth-tag free">Free</span>`}
             <a href="${s.links.github}" target="_blank" class="github-link" title="View on GitHub">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             </a>
@@ -55,7 +56,6 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
           <p class="skill-desc">${s.description}</p>
           ${s.dependencies && s.dependencies.length > 0 ? `<div class="skill-deps"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg> Depends on: ${s.dependencies.map(d => `<span class="dep-tag">${d}</span>`).join('')}</div>` : ''}
           <div class="skill-triggers">${s.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
-          ${s.auth.required ? `<div class="auth-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> ${s.auth.note}</div>` : `<div class="auth-note free"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> ${s.auth.note}</div>`}
           <div class="install-section">
             <div class="install-tabs level-tabs">
               <button class="tab-btn active" onclick="switchLevel(this, 'user')">User-level</button>
@@ -152,17 +152,17 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .skill-title { flex: 1; display: flex; align-items: baseline; gap: 8px; }
     .skill-title h3 { font-size: 16px; font-weight: 700; }
     .version { font-size: 10px; color: var(--gray-400); }
-    .github-link { color: var(--gray-400); padding: 4px; }
+    .github-link { color: var(--gray-400); padding: 4px; display: flex; align-items: center; }
     .github-link:hover { color: var(--black); }
     .skill-desc { font-size: 12px; color: var(--gray-600); margin-bottom: 12px; line-height: 1.6; }
     .skill-deps { font-size: 10px; color: var(--gray-600); display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
     .skill-deps svg { flex-shrink: 0; }
     .dep-tag { font-size: 9px; padding: 2px 6px; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; margin-left: 4px; }
-    .skill-triggers { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .skill-triggers { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; }
     .trigger { font-size: 9px; padding: 3px 8px; background: var(--gray-100); border: 1px solid var(--gray-200); }
-    .auth-note { font-size: 10px; color: var(--gray-600); display: flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 8px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); }
-    .auth-note.free { color: var(--green); background: #f0fdf4; border-color: #bbf7d0; }
-    .auth-note svg { flex-shrink: 0; }
+    .auth-tag { font-size: 9px; padding: 3px 8px; font-weight: 500; line-height: 1; }
+    .auth-tag.free { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .auth-tag.paid { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
     
     .install-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
     .install-tabs { display: flex; gap: 0; margin-bottom: 4px; flex-wrap: wrap; }
@@ -372,8 +372,24 @@ async function fetchSkillsConfig(ctx) {
 function getFallbackConfig() {
   return {
     version: "1.0.0",
-    logo: "https://github.com/ReScienceLab.png",
+    logo: "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/resciencelab-logo.svg",
     skills: [
+      {
+        name: "domain-hunter",
+        version: "1.0.0",
+        description: "Search domains, compare prices, find promo codes",
+        icon: "globe",
+        color: "4A90D9",
+        triggers: ["domain", "registrar"],
+        auth: { required: false, note: "No API key required" },
+        install: {
+          claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
+          droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
+          cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter"
+        },
+        commands: ["whois {domain}.{tld}"],
+        links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/domain-hunter" }
+      },
       {
         name: "reddit",
         version: "1.0.0",
@@ -392,7 +408,7 @@ function getFallbackConfig() {
       },
       {
         name: "twitter",
-        version: "1.0.0", 
+        version: "1.0.0",
         description: "Search and retrieve content from Twitter/X via twitterapi.io",
         icon: "x",
         color: "000000",
@@ -405,22 +421,6 @@ function getFallbackConfig() {
         },
         commands: ["python3 scripts/get_user_info.py {username}"],
         links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/twitter" }
-      },
-      {
-        name: "domain-hunter",
-        version: "1.0.0",
-        description: "Search domains, compare prices, find promo codes",
-        icon: "globe",
-        color: "4A90D9",
-        triggers: ["domain", "registrar"],
-        auth: { required: false, note: "No API key required" },
-        install: {
-          claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
-          droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
-          cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter"
-        },
-        commands: ["whois {domain}.{tld}"],
-        links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/domain-hunter" }
       }
     ]
   };

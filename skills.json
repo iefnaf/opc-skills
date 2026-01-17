@@ -4,8 +4,44 @@
   "description": "Agent Skills for One Person Companies",
   "repository": "https://github.com/ReScienceLab/opc-skills",
   "website": "https://opc.dev",
-  "logo": "https://github.com/ReScienceLab.png",
+  "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/resciencelab-logo.svg",
   "skills": [
+    {
+      "name": "domain-hunter",
+      "version": "1.0.0",
+      "description": "Search domains, compare registrar prices, and find promo codes. Help users find and purchase domain names at the best price.",
+      "icon": "globe",
+      "color": "4A90D9",
+      "triggers": ["domain", "registrar", "buy domain", "domain price", ".ai domain", ".com domain"],
+      "dependencies": ["twitter", "reddit"],
+      "auth": {
+        "required": false,
+        "type": null,
+        "note": "Uses web search and public APIs (depends on twitter & reddit skills for promo code search)"
+      },
+      "install": {
+        "user": {
+          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode domain-hunter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex domain-hunter"
+        },
+        "project": {
+          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p domain-hunter",
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p domain-hunter",
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p domain-hunter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p domain-hunter"
+        }
+      },
+      "commands": [
+        "whois {domain}.{tld}",
+        "WebSearch: cheapest .{tld} domain registrar"
+      ],
+      "links": {
+        "github": "https://github.com/ReScienceLab/opc-skills/tree/main/skills/domain-hunter"
+      }
+    },
     {
       "name": "reddit",
       "version": "1.0.0",
@@ -85,42 +121,6 @@
       "links": {
         "github": "https://github.com/ReScienceLab/opc-skills/tree/main/skills/twitter",
         "docs": "https://docs.twitterapi.io/"
-      }
-    },
-    {
-      "name": "domain-hunter",
-      "version": "1.0.0",
-      "description": "Search domains, compare registrar prices, and find promo codes. Help users find and purchase domain names at the best price.",
-      "icon": "globe",
-      "color": "4A90D9",
-      "triggers": ["domain", "registrar", "buy domain", "domain price", ".ai domain", ".com domain"],
-      "dependencies": ["twitter", "reddit"],
-      "auth": {
-        "required": false,
-        "type": null,
-        "note": "Uses web search and public APIs (depends on twitter & reddit skills for promo code search)"
-      },
-      "install": {
-        "user": {
-          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
-          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode domain-hunter",
-          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex domain-hunter"
-        },
-        "project": {
-          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p domain-hunter",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p domain-hunter",
-          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter",
-          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p domain-hunter",
-          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p domain-hunter"
-        }
-      },
-      "commands": [
-        "whois {domain}.{tld}",
-        "WebSearch: cheapest .{tld} domain registrar"
-      ],
-      "links": {
-        "github": "https://github.com/ReScienceLab/opc-skills/tree/main/skills/domain-hunter"
       }
     },
     {
