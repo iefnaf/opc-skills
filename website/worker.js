@@ -74,6 +74,16 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
                 <code data-cmd="${s.install.user?.droid || s.install.droid}">curl ... -t droid ${s.name}</code>
                 <button onclick="copyCmd(this)">Copy</button>
               </div>
+              <div class="install-row">
+                <span class="label">OpenCode</span>
+                <code data-cmd="${s.install.user?.opencode || ''}">curl ... -t opencode ${s.name}</code>
+                <button onclick="copyCmd(this)">Copy</button>
+              </div>
+              <div class="install-row">
+                <span class="label">Codex</span>
+                <code data-cmd="${s.install.user?.codex || ''}">curl ... -t codex ${s.name}</code>
+                <button onclick="copyCmd(this)">Copy</button>
+              </div>
             </div>
             <div class="tab-content project-content" style="display:none">
               <div class="install-row">
@@ -84,6 +94,16 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
               <div class="install-row">
                 <span class="label">Droid</span>
                 <code data-cmd="${s.install.project?.droid || ''}">curl ... -t droid -p ${s.name}</code>
+                <button onclick="copyCmd(this)">Copy</button>
+              </div>
+              <div class="install-row">
+                <span class="label">OpenCode</span>
+                <code data-cmd="${s.install.project?.opencode || ''}">curl ... -t opencode -p ${s.name}</code>
+                <button onclick="copyCmd(this)">Copy</button>
+              </div>
+              <div class="install-row">
+                <span class="label">Codex</span>
+                <code data-cmd="${s.install.project?.codex || ''}">curl ... -t codex -p ${s.name}</code>
                 <button onclick="copyCmd(this)">Copy</button>
               </div>
               <div class="install-row">

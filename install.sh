@@ -103,8 +103,12 @@ show_help() {
     echo "  claude      ~/.claude/skills            .claude/skills"
     echo "  droid       ~/.factory/skills           .factory/skills"
     echo "  cursor      -                           .cursor/skills"
-    echo "  opencode    ~/.config/opencode/skills   -"
+    echo "  opencode    ~/.config/opencode/skills   .opencode/skills"
     echo "  codex       ~/.codex/skills             .codex/skills"
+    echo ""
+    echo "Notes:"
+    echo "  - Codex requires: codex --enable skills"
+    echo "  - OpenCode uses singular 'skill' dir internally, symlink may be needed"
 }
 
 get_skills_dir() {
@@ -130,7 +134,11 @@ get_skills_dir() {
             echo ".cursor/skills"
             ;;
         opencode)
-            echo "$HOME/.config/opencode/skills"
+            if [ "$project" = "true" ]; then
+                echo ".opencode/skills"
+            else
+                echo "$HOME/.config/opencode/skills"
+            fi
             ;;
         codex)
             if [ "$project" = "true" ]; then

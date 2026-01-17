@@ -22,12 +22,16 @@
       "install": {
         "user": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude reddit",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid reddit"
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid reddit",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode reddit",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex reddit"
         },
         "project": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p reddit",
           "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p reddit",
-          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p reddit"
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p reddit",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p reddit",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p reddit"
         }
       },
       "commands": [
@@ -59,12 +63,16 @@
       "install": {
         "user": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude twitter",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid twitter"
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid twitter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode twitter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex twitter"
         },
         "project": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p twitter",
           "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p twitter",
-          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p twitter"
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p twitter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p twitter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p twitter"
         }
       },
       "commands": [
@@ -95,12 +103,16 @@
       "install": {
         "user": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter"
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode domain-hunter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex domain-hunter"
         },
         "project": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p domain-hunter",
           "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p domain-hunter",
-          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter"
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p domain-hunter",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p domain-hunter"
         }
       },
       "commands": [
@@ -128,12 +140,16 @@
       "install": {
         "user": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude producthunt",
-          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid producthunt"
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid producthunt",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode producthunt",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex producthunt"
         },
         "project": {
           "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p producthunt",
           "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p producthunt",
-          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p producthunt"
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p producthunt",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p producthunt",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p producthunt"
         }
       },
       "commands": [
