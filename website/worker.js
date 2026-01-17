@@ -57,61 +57,35 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
           <div class="skill-triggers">${s.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
           ${s.auth.required ? `<div class="auth-note"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> ${s.auth.note}</div>` : `<div class="auth-note free"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> ${s.auth.note}</div>`}
           <div class="install-section">
-            <div class="install-tabs">
-              <button class="tab-btn active" onclick="switchTab(this, 'user')">User-level</button>
-              <button class="tab-btn" onclick="switchTab(this, 'project')">Project-level</button>
+            <div class="install-tabs level-tabs">
+              <button class="tab-btn active" onclick="switchLevel(this, 'user')">User-level</button>
+              <button class="tab-btn" onclick="switchLevel(this, 'project')">Project-level</button>
             </div>
             <div class="tab-hint user-hint">Available across ALL your projects</div>
             <div class="tab-hint project-hint" style="display:none">Shared with team in this repo</div>
-            <div class="tab-content user-content">
-              <div class="install-row">
-                <span class="label">Claude</span>
-                <code data-cmd="${s.install.user?.claude || s.install.claude}">curl ... -t claude ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">Droid</span>
-                <code data-cmd="${s.install.user?.droid || s.install.droid}">curl ... -t droid ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">OpenCode</span>
-                <code data-cmd="${s.install.user?.opencode || ''}">curl ... -t opencode ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">Codex</span>
-                <code data-cmd="${s.install.user?.codex || ''}">curl ... -t codex ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
+            <div class="install-tabs platform-tabs">
+              <button class="tab-btn active" data-platform="claude" onclick="switchPlatform(this, 'claude')">Claude</button>
+              <button class="tab-btn" data-platform="droid" onclick="switchPlatform(this, 'droid')">Droid</button>
+              <button class="tab-btn" data-platform="opencode" onclick="switchPlatform(this, 'opencode')">OpenCode</button>
+              <button class="tab-btn" data-platform="codex" onclick="switchPlatform(this, 'codex')">Codex</button>
+              <button class="tab-btn" data-platform="cursor" onclick="switchPlatform(this, 'cursor')">Cursor</button>
             </div>
-            <div class="tab-content project-content" style="display:none">
-              <div class="install-row">
-                <span class="label">Claude</span>
-                <code data-cmd="${s.install.project?.claude || ''}">curl ... -t claude -p ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">Droid</span>
-                <code data-cmd="${s.install.project?.droid || ''}">curl ... -t droid -p ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">OpenCode</span>
-                <code data-cmd="${s.install.project?.opencode || ''}">curl ... -t opencode -p ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">Codex</span>
-                <code data-cmd="${s.install.project?.codex || ''}">curl ... -t codex -p ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
-              <div class="install-row">
-                <span class="label">Cursor</span>
-                <code data-cmd="${s.install.project?.cursor || ''}">curl ... -t cursor -p ${s.name}</code>
-                <button onclick="copyCmd(this)">Copy</button>
-              </div>
+            <div class="install-cmd">
+              <code class="cmd-display" 
+                data-user-claude="${s.install.user?.claude || ''}"
+                data-user-droid="${s.install.user?.droid || ''}"
+                data-user-opencode="${s.install.user?.opencode || ''}"
+                data-user-codex="${s.install.user?.codex || ''}"
+                data-user-cursor=""
+                data-project-claude="${s.install.project?.claude || ''}"
+                data-project-droid="${s.install.project?.droid || ''}"
+                data-project-opencode="${s.install.project?.opencode || ''}"
+                data-project-codex="${s.install.project?.codex || ''}"
+                data-project-cursor="${s.install.project?.cursor || ''}"
+              >${s.install.user?.claude || ''}</code>
+              <button class="copy-btn" onclick="copyCmdNew(this)">Copy</button>
             </div>
+            <div class="platform-note cursor-note" style="display:none">Cursor only supports project-level</div>
           </div>
           <details class="commands-section">
             <summary>Example Commands</summary>
@@ -191,18 +165,21 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .auth-note svg { flex-shrink: 0; }
     
     .install-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .install-tabs { display: flex; gap: 0; margin-bottom: 4px; }
-    .tab-btn { font-family: var(--font); font-size: 10px; padding: 6px 12px; border: 1px solid var(--gray-200); background: var(--gray-50); cursor: pointer; color: var(--gray-600); }
-    .tab-btn:first-child { border-radius: 4px 0 0 4px; }
-    .tab-btn:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+    .install-tabs { display: flex; gap: 0; margin-bottom: 4px; flex-wrap: wrap; }
+    .tab-btn { font-family: var(--font); font-size: 10px; padding: 6px 12px; border: 1px solid var(--gray-200); background: var(--gray-50); cursor: pointer; color: var(--gray-600); border-left: none; }
+    .tab-btn:first-child { border-radius: 4px 0 0 4px; border-left: 1px solid var(--gray-200); }
+    .tab-btn:last-child { border-radius: 0 4px 4px 0; }
     .tab-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
-    .tab-hint { font-size: 9px; color: var(--gray-400); margin-bottom: 8px; font-style: italic; }
-    .install-row { display: flex; align-items: center; gap: 8px; }
-    .install-row .label { font-size: 10px; font-weight: 600; width: 50px; flex-shrink: 0; }
-    .install-row code { flex: 1; font-size: 10px; padding: 6px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font); }
-    .install-row button { font-family: var(--font); font-size: 10px; padding: 6px 12px; border: 1px solid var(--black); background: var(--white); cursor: pointer; flex-shrink: 0; }
-    .install-row button:hover { background: var(--black); color: var(--white); }
-    .install-row button.copied { background: var(--green); color: var(--white); border-color: var(--green); }
+    .level-tabs { margin-bottom: 4px; }
+    .platform-tabs { margin-bottom: 8px; }
+    .platform-tabs .tab-btn { padding: 4px 10px; font-size: 9px; }
+    .tab-hint { font-size: 9px; color: var(--gray-400); margin-bottom: 4px; font-style: italic; }
+    .install-cmd { display: flex; align-items: center; gap: 8px; }
+    .install-cmd code { flex: 1; font-size: 10px; padding: 8px 12px; background: var(--gray-50); border: 1px solid var(--gray-200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace; }
+    .install-cmd .copy-btn { font-family: var(--font); font-size: 10px; padding: 8px 16px; border: 1px solid var(--black); background: var(--white); cursor: pointer; flex-shrink: 0; }
+    .install-cmd .copy-btn:hover { background: var(--black); color: var(--white); }
+    .install-cmd .copy-btn.copied { background: var(--green); color: var(--white); border-color: var(--green); }
+    .platform-note { font-size: 9px; color: var(--gray-400); font-style: italic; margin-top: 4px; }
     
     .commands-section { border-top: 1px solid var(--gray-200); padding-top: 12px; }
     .commands-section summary { font-size: 11px; font-weight: 600; cursor: pointer; color: var(--gray-600); }
@@ -292,22 +269,58 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
       setTimeout(() => toast.classList.remove('show'), 2000);
     }
     
-    function switchTab(btn, level) {
+    function copyCmdNew(btn) {
+      const code = btn.previousElementSibling;
+      const cmd = code.textContent;
+      if (!cmd) {
+        showToast('Not available for this combination');
+        return;
+      }
+      navigator.clipboard.writeText(cmd).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        showToast();
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+    
+    function updateCmd(card) {
+      const levelBtn = card.querySelector('.level-tabs .tab-btn.active');
+      const platformBtn = card.querySelector('.platform-tabs .tab-btn.active');
+      const level = levelBtn.textContent.toLowerCase().includes('user') ? 'user' : 'project';
+      const platform = platformBtn.dataset.platform;
+      
+      const code = card.querySelector('.cmd-display');
+      const cmd = code.dataset[level + '-' + platform] || code.dataset[level + platform.charAt(0).toUpperCase() + platform.slice(1)] || '';
+      code.textContent = cmd || 'Not available';
+      
+      // Show cursor note when user-level + cursor
+      const cursorNote = card.querySelector('.cursor-note');
+      if (cursorNote) {
+        cursorNote.style.display = (platform === 'cursor' && level === 'user') ? 'block' : 'none';
+      }
+    }
+    
+    function switchLevel(btn, level) {
       const card = btn.closest('.skill-card');
-      card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      card.querySelectorAll('.level-tabs .tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
-      if (level === 'user') {
-        card.querySelector('.user-content').style.display = 'block';
-        card.querySelector('.project-content').style.display = 'none';
-        card.querySelector('.user-hint').style.display = 'block';
-        card.querySelector('.project-hint').style.display = 'none';
-      } else {
-        card.querySelector('.user-content').style.display = 'none';
-        card.querySelector('.project-content').style.display = 'block';
-        card.querySelector('.user-hint').style.display = 'none';
-        card.querySelector('.project-hint').style.display = 'block';
-      }
+      card.querySelector('.user-hint').style.display = level === 'user' ? 'block' : 'none';
+      card.querySelector('.project-hint').style.display = level === 'project' ? 'block' : 'none';
+      
+      updateCmd(card);
+    }
+    
+    function switchPlatform(btn, platform) {
+      const card = btn.closest('.skill-card');
+      card.querySelectorAll('.platform-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      updateCmd(card);
     }
   </script>
 </body>
