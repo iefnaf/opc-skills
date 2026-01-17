@@ -280,15 +280,25 @@ if [ -z "$TARGET_DIR" ]; then
 fi
 
 # Determine source: local repo or download from GitHub
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" 2>/dev/null)" && pwd 2>/dev/null)" || SCRIPT_DIR=""
-SOURCE_DIR="$SCRIPT_DIR/$SKILLS_DIR"
+SCRIPT_DIR=""
+SOURCE_DIR=""
+USE_LOCAL="false"
+
+# Try to detect if running from local repo (not piped via curl)
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" != "bash" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)" || true
+    if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/$SKILLS_DIR" ]; then
+        SOURCE_DIR="$SCRIPT_DIR/$SKILLS_DIR"
+        USE_LOCAL="true"
+    fi
+fi
 
 print_header
 echo "Installing to: $TARGET_DIR"
 echo ""
 
 # Check if running from local repo
-if [ -n "$SCRIPT_DIR" ] && [ -d "$SOURCE_DIR" ]; then
+if [ "$USE_LOCAL" = "true" ]; then
     print_info "Using local repository..."
     
     if [ "$SKILL" = "all" ]; then
