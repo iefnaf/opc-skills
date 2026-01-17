@@ -6,7 +6,10 @@
 set -e
 
 REPO_URL="https://github.com/ReScienceLab/opc-skills"
+REPO_RAW="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main"
 SKILLS_DIR="skills"
+TEMP_DIR=""
+CLEANUP_TEMP="false"
 
 # Colors
 RED='\033[0;31m'
@@ -34,6 +37,18 @@ print_error() {
     echo -e "${RED}✗ $1${NC}"
 }
 
+print_info() {
+    echo -e "${BLUE}→ $1${NC}"
+}
+
+cleanup() {
+    if [ "$CLEANUP_TEMP" = "true" ] && [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
+        rm -rf "$TEMP_DIR"
+    fi
+}
+
+trap cleanup EXIT
+
 # Available skills
 AVAILABLE_SKILLS=("reddit" "twitter" "domain-hunter" "all")
 
@@ -53,10 +68,14 @@ show_help() {
     echo "  -h, --help         Show this help"
     echo ""
     echo "Examples:"
-    echo "  ./install.sh -t claude reddit        # Install reddit skill to Claude Code"
-    echo "  ./install.sh -t droid all            # Install all skills to Factory Droid"
-    echo "  ./install.sh -t custom -d ~/.my-agent/skills twitter"
-    echo "  ./install.sh -t claude -p all        # Install to current project's .claude/skills"
+    echo "  # Via curl (recommended)"
+    echo "  curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude reddit"
+    echo "  curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid all"
+    echo ""
+    echo "  # From cloned repo"
+    echo "  ./install.sh -t claude reddit"
+    echo "  ./install.sh -t droid all"
+    echo "  ./install.sh -t cursor -p all"
     echo ""
     echo "Default directories:"
     echo "  claude:   ~/.claude/skills (global) or .claude/skills (project)"
@@ -103,7 +122,54 @@ get_skills_dir() {
     esac
 }
 
-install_skill() {
+download_skill() {
+    local skill=$1
+    local target_dir=$2
+    
+    print_info "Downloading $skill..."
+    
+    mkdir -p "$target_dir/$skill"
+    
+    # Download SKILL.md
+    curl -fsSL "$REPO_RAW/skills/$skill/SKILL.md" -o "$target_dir/$skill/SKILL.md" 2>/dev/null || {
+        print_error "Failed to download $skill/SKILL.md"
+        return 1
+    }
+    
+    # Get list of files in skill directory from GitHub API
+    local files_json=$(curl -fsSL "https://api.github.com/repos/ReScienceLab/opc-skills/contents/skills/$skill" 2>/dev/null)
+    
+    # Download scripts directory if exists
+    if echo "$files_json" | grep -q '"name": *"scripts"'; then
+        mkdir -p "$target_dir/$skill/scripts"
+        local scripts_json=$(curl -fsSL "https://api.github.com/repos/ReScienceLab/opc-skills/contents/skills/$skill/scripts" 2>/dev/null)
+        
+        # Parse and download each script file
+        echo "$scripts_json" | grep -o '"download_url": *"[^"]*"' | cut -d'"' -f4 | while read -r url; do
+            if [ -n "$url" ] && [ "$url" != "null" ]; then
+                local filename=$(basename "$url")
+                curl -fsSL "$url" -o "$target_dir/$skill/scripts/$filename" 2>/dev/null
+            fi
+        done
+    fi
+    
+    # Download references directory if exists
+    if echo "$files_json" | grep -q '"name": *"references"'; then
+        mkdir -p "$target_dir/$skill/references"
+        local refs_json=$(curl -fsSL "https://api.github.com/repos/ReScienceLab/opc-skills/contents/skills/$skill/references" 2>/dev/null)
+        
+        echo "$refs_json" | grep -o '"download_url": *"[^"]*"' | cut -d'"' -f4 | while read -r url; do
+            if [ -n "$url" ] && [ "$url" != "null" ]; then
+                local filename=$(basename "$url")
+                curl -fsSL "$url" -o "$target_dir/$skill/references/$filename" 2>/dev/null
+            fi
+        done
+    fi
+    
+    print_success "Installed $skill to $target_dir/$skill"
+}
+
+install_skill_from_local() {
     local skill=$1
     local target_dir=$2
     local source_dir=$3
@@ -213,27 +279,38 @@ if [ -z "$TARGET_DIR" ]; then
     exit 1
 fi
 
-# Find source directory (script location)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Determine source: local repo or download from GitHub
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" 2>/dev/null)" && pwd 2>/dev/null)" || SCRIPT_DIR=""
 SOURCE_DIR="$SCRIPT_DIR/$SKILLS_DIR"
-
-if [ ! -d "$SOURCE_DIR" ]; then
-    print_error "Skills directory not found at $SOURCE_DIR"
-    print_warning "Make sure you're running this from the opc-skills repository"
-    exit 1
-fi
 
 print_header
 echo "Installing to: $TARGET_DIR"
 echo ""
 
-# Install skill(s)
-if [ "$SKILL" = "all" ]; then
-    for s in reddit twitter domain-hunter; do
-        install_skill "$s" "$TARGET_DIR" "$SOURCE_DIR"
-    done
+# Check if running from local repo
+if [ -n "$SCRIPT_DIR" ] && [ -d "$SOURCE_DIR" ]; then
+    print_info "Using local repository..."
+    
+    if [ "$SKILL" = "all" ]; then
+        for s in reddit twitter domain-hunter; do
+            install_skill_from_local "$s" "$TARGET_DIR" "$SOURCE_DIR"
+        done
+    else
+        install_skill_from_local "$SKILL" "$TARGET_DIR" "$SOURCE_DIR"
+    fi
 else
-    install_skill "$SKILL" "$TARGET_DIR" "$SOURCE_DIR"
+    # Download from GitHub
+    print_info "Downloading from GitHub..."
+    
+    mkdir -p "$TARGET_DIR"
+    
+    if [ "$SKILL" = "all" ]; then
+        for s in reddit twitter domain-hunter; do
+            download_skill "$s" "$TARGET_DIR"
+        done
+    else
+        download_skill "$SKILL" "$TARGET_DIR"
+    fi
 fi
 
 echo ""
