@@ -49,15 +49,22 @@ cleanup() {
 
 trap cleanup EXIT
 
-# Available skills and their dependencies
-declare -A SKILL_DEPS
-SKILL_DEPS["reddit"]=""
-SKILL_DEPS["twitter"]=""
-SKILL_DEPS["domain-hunter"]="twitter reddit"
-AVAILABLE_SKILLS=("reddit" "twitter" "domain-hunter" "all")
+# Available skills
+AVAILABLE_SKILLS="reddit twitter domain-hunter"
 
 # Track installed skills to avoid duplicates
 INSTALLED_SKILLS=""
+
+# Get dependencies for a skill
+get_skill_deps() {
+    local skill=$1
+    case $skill in
+        reddit) echo "" ;;
+        twitter) echo "" ;;
+        domain-hunter) echo "twitter reddit" ;;
+        *) echo "" ;;
+    esac
+}
 
 show_help() {
     echo "Usage: ./install.sh [OPTIONS] <skill>"
@@ -177,26 +184,6 @@ download_skill() {
     print_success "Installed $skill to $target_dir/$skill"
 }
 
-# Get dependencies for a skill from skills.json
-get_dependencies() {
-    local skill=$1
-    
-    # First try local SKILL_DEPS
-    if [ -n "${SKILL_DEPS[$skill]:-}" ]; then
-        echo "${SKILL_DEPS[$skill]}"
-        return
-    fi
-    
-    # Fallback: fetch from skills.json
-    local deps=$(curl -fsSL "$REPO_RAW/skills.json" 2>/dev/null | \
-        grep -A50 "\"name\": \"$skill\"" | \
-        grep -A1 '"dependencies"' | \
-        grep -o '\[.*\]' | \
-        tr -d '[]"' | \
-        tr ',' ' ')
-    echo "$deps"
-}
-
 # Install a skill with its dependencies
 install_with_deps() {
     local skill=$1
@@ -210,7 +197,7 @@ install_with_deps() {
     fi
     
     # Get dependencies
-    local deps="${SKILL_DEPS[$skill]:-}"
+    local deps=$(get_skill_deps "$skill")
     
     # Install dependencies first
     if [ -n "$deps" ] && [ "$INSTALL_DEPS" = "true" ]; then
@@ -376,12 +363,12 @@ mkdir -p "$TARGET_DIR"
 
 # Install skill(s) with dependencies
 if [ "$SKILL" = "all" ]; then
-    for s in reddit twitter domain-hunter; do
+    for s in $AVAILABLE_SKILLS; do
         install_with_deps "$s" "$TARGET_DIR" "$SOURCE_DIR" "$USE_LOCAL"
     done
 else
     # Show dependencies info
-    deps="${SKILL_DEPS[$SKILL]:-}"
+    deps=$(get_skill_deps "$SKILL")
     if [ -n "$deps" ] && [ "$INSTALL_DEPS" = "true" ]; then
         print_info "Will also install dependencies: $deps"
     fi
