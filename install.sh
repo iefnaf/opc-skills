@@ -67,6 +67,256 @@ get_skill_deps() {
     esac
 }
 
+# Path to skills.json (set after determining source)
+SKILLS_JSON_PATH=""
+SKILLS_JSON_CONTENT=""
+
+# Load skills.json content
+load_skills_json() {
+    if [ -n "$SKILLS_JSON_CONTENT" ]; then
+        return 0
+    fi
+
+    if [ "$USE_LOCAL" = "true" ] && [ -f "$SCRIPT_DIR/skills.json" ]; then
+        SKILLS_JSON_PATH="$SCRIPT_DIR/skills.json"
+        SKILLS_JSON_CONTENT=$(cat "$SKILLS_JSON_PATH")
+    else
+        # Download skills.json from GitHub
+        SKILLS_JSON_CONTENT=$(curl -fsSL "$REPO_RAW/skills.json" 2>/dev/null) || {
+            print_warning "Could not load skills.json for auth info"
+            return 1
+        }
+    fi
+}
+
+# Extract a field from a skill's JSON block using grep/sed
+# Usage: get_skill_field "twitter" "env_var"
+get_skill_field() {
+    local skill=$1
+    local field=$2
+
+    load_skills_json || return 1
+
+    # Extract the skill block and find the field
+    # This is a simple parser that works for our JSON structure
+    echo "$SKILLS_JSON_CONTENT" | awk -v skill="$skill" -v field="$field" '
+        BEGIN { in_skill = 0; in_auth = 0; brace_count = 0 }
+        /"name"[[:space:]]*:[[:space:]]*"'"$skill"'"/ { in_skill = 1 }
+        in_skill && /"auth"[[:space:]]*:/ { in_auth = 1 }
+        in_skill && in_auth {
+            if ($0 ~ "\"" field "\"[[:space:]]*:") {
+                gsub(/.*"'"$field"'"[[:space:]]*:[[:space:]]*"?/, "")
+                gsub(/".*/, "")
+                gsub(/,.*/, "")
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+                print
+                exit
+            }
+        }
+        in_skill && /^[[:space:]]*\{/ { brace_count++ }
+        in_skill && /^[[:space:]]*\}/ {
+            brace_count--
+            if (brace_count <= 0) { in_skill = 0; in_auth = 0 }
+        }
+    '
+}
+
+# Check if skill requires authentication
+skill_requires_auth() {
+    local skill=$1
+    load_skills_json || return 1
+
+    local required=$(get_skill_field "$skill" "required")
+    if [ "$required" = "true" ]; then
+        return 0  # true - requires auth
+    else
+        return 1  # false - no auth
+    fi
+}
+
+# Get environment variable name for skill auth
+get_skill_env_var() {
+    local skill=$1
+    get_skill_field "$skill" "env_var"
+}
+
+# Get auth note/instructions for skill
+get_skill_auth_note() {
+    local skill=$1
+    get_skill_field "$skill" "note"
+}
+
+# Detect user's shell profile
+get_shell_profile() {
+    local shell_name=$(basename "$SHELL")
+    case $shell_name in
+        zsh) echo "$HOME/.zshrc" ;;
+        bash)
+            if [ -f "$HOME/.bash_profile" ]; then
+                echo "$HOME/.bash_profile"
+            else
+                echo "$HOME/.bashrc"
+            fi
+            ;;
+        fish) echo "$HOME/.config/fish/config.fish" ;;
+        *) echo "$HOME/.profile" ;;
+    esac
+}
+
+# Check if an environment variable is set
+is_env_var_set() {
+    local var_name=$1
+    eval "[ -n \"\${$var_name:-}\" ]"
+}
+
+# Print auth instructions for a single skill
+print_skill_auth_instructions() {
+    local skill=$1
+    local is_dependency=$2
+    local env_var=$(get_skill_env_var "$skill")
+    local auth_note=$(get_skill_auth_note "$skill")
+    local shell_profile=$(get_shell_profile)
+
+    # Check if API key is already configured
+    if is_env_var_set "$env_var"; then
+        if [ "$is_dependency" = "true" ]; then
+            print_success "$skill skill (dependency): API key already configured (\$$env_var)"
+        else
+            print_success "$skill skill: API key already configured (\$$env_var)"
+        fi
+        return 0
+    fi
+
+    # API key not configured - show instructions
+    if [ "$is_dependency" = "true" ]; then
+        echo -e "${YELLOW}⚠  Dependency requires API Key:${NC}"
+        echo "   The $skill skill (dependency) requires authentication:"
+    else
+        echo -e "${YELLOW}⚠  API Key Required:${NC}"
+    fi
+    echo ""
+    echo "   Environment variable: $env_var"
+    if [ -n "$auth_note" ]; then
+        echo "   $auth_note"
+    fi
+    echo ""
+    echo "   Add to your shell profile ($shell_profile):"
+    echo ""
+    echo -e "   ${BLUE}export $env_var=\"your_api_key_here\"${NC}"
+    echo ""
+    echo "   Then run: source $shell_profile"
+    echo ""
+}
+
+# Print post-install instructions with auth awareness
+print_post_install_instructions() {
+    local skill=$1
+    local installed_skills=$2
+
+    echo ""
+    print_success "Installation complete!"
+
+    # Collect all skills that need auth (main skill + dependencies)
+    local skills_needing_auth=""
+    local skills_no_auth=""
+
+    for s in $installed_skills; do
+        if skill_requires_auth "$s"; then
+            skills_needing_auth="$skills_needing_auth $s"
+        else
+            skills_no_auth="$skills_no_auth $s"
+        fi
+    done
+
+    # Trim whitespace
+    skills_needing_auth=$(echo "$skills_needing_auth" | xargs)
+    skills_no_auth=$(echo "$skills_no_auth" | xargs)
+
+    # Show dependencies info if installed multiple skills
+    local skill_count=$(echo "$installed_skills" | wc -w | xargs)
+    if [ "$skill_count" -gt 1 ]; then
+        local deps_list=""
+        for s in $installed_skills; do
+            if [ "$s" != "$skill" ]; then
+                if [ -z "$deps_list" ]; then
+                    deps_list="$s"
+                else
+                    deps_list="$deps_list, $s"
+                fi
+            fi
+        done
+        if [ -n "$deps_list" ]; then
+            echo "  Installed: $skill (+ dependencies: $deps_list)"
+        fi
+    fi
+    echo ""
+
+    # Track which skills have missing API keys
+    local skills_missing_keys=""
+
+    # Print auth instructions for skills that need them
+    if [ -n "$skills_needing_auth" ]; then
+        # Get dependencies for the main skill
+        local main_deps=""
+        if [ "$skill" != "all" ]; then
+            main_deps=$(get_skill_deps "$skill")
+        fi
+
+        for s in $skills_needing_auth; do
+            # Check if this skill is a dependency (not the main skill and not "all" install)
+            local is_dep="false"
+            if [ "$skill" != "all" ] && [ "$s" != "$skill" ]; then
+                # Check if it's in the dependencies list
+                if echo " $main_deps " | grep -q " $s "; then
+                    is_dep="true"
+                fi
+            fi
+            
+            # Check if API key is missing for this skill
+            local env_var=$(get_skill_env_var "$s")
+            if ! is_env_var_set "$env_var"; then
+                skills_missing_keys="$skills_missing_keys $s"
+            fi
+            
+            print_skill_auth_instructions "$s" "$is_dep"
+        done
+    fi
+
+    # Trim whitespace
+    skills_missing_keys=$(echo "$skills_missing_keys" | xargs)
+
+    # Show status of skills that don't need auth
+    if [ -n "$skills_no_auth" ]; then
+        for s in $skills_no_auth; do
+            print_success "$s skill: No API key required"
+        done
+        echo ""
+    fi
+
+    # If no auth required at all, show simple ready message
+    if [ -z "$skills_needing_auth" ]; then
+        print_success "No API key required - ready to use!"
+        echo ""
+    fi
+
+    # Next steps
+    echo "Next steps:"
+    local example_skill="$skill"
+    if [ "$skill" = "all" ]; then
+        # Pick a good example skill from the installed list
+        example_skill=$(echo "$installed_skills" | awk '{print $1}')
+    fi
+
+    if [ -n "$skills_missing_keys" ]; then
+        echo "  1. Configure the missing API key(s) above"
+        echo "  2. Restart your AI coding assistant"
+        echo "  3. Try: 'Use the $example_skill skill to...'"
+    else
+        echo "  1. Restart your AI coding assistant"
+        echo "  2. Try: 'Use the $example_skill skill to...'"
+    fi
+}
+
 show_help() {
     echo "Usage: ./install.sh [OPTIONS] <skill>"
     echo ""
@@ -393,9 +643,5 @@ else
     install_with_deps "$SKILL" "$TARGET_DIR" "$SOURCE_DIR" "$USE_LOCAL"
 fi
 
-echo ""
-print_success "Installation complete!"
-echo ""
-echo "Next steps:"
-echo "  1. Restart your AI coding assistant"
-echo "  2. Try: 'Use the $SKILL skill to...'"
+# Print auth-aware post-install instructions
+print_post_install_instructions "$SKILL" "$INSTALLED_SKILLS"

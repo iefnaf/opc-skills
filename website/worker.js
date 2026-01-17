@@ -237,7 +237,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
   </main>
 
   <footer>
-    <p>2026 <a href="https://resciencelab.ai" target="_blank">ReScience Lab</a> | <a href="mailto:hi@opc.dev">hi@opc.dev</a> | <a href="https://github.com/ReScienceLab/opc-skills" target="_blank">GitHub</a> | <a href="/skills.json">API</a></p>
+    <p>2026 <a href="https://rescience.com" target="_blank">ReScience Lab</a> | <a href="mailto:hi@opc.dev">hi@opc.dev</a> | <a href="https://github.com/ReScienceLab/opc-skills" target="_blank">GitHub</a> | <a href="/skills.json">API</a></p>
   </footer>
 
   <div class="toast" id="toast">Copied to clipboard!</div>
@@ -381,11 +381,22 @@ function getFallbackConfig() {
         icon: "globe",
         color: "4A90D9",
         triggers: ["domain", "registrar"],
-        auth: { required: false, note: "No API key required" },
+        dependencies: ["twitter", "reddit"],
+        auth: { required: false, note: "Uses web search and public APIs" },
         install: {
-          claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
-          droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
-          cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter"
+          user: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude domain-hunter",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid domain-hunter",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode domain-hunter",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex domain-hunter"
+          },
+          project: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p domain-hunter",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p domain-hunter",
+            cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p domain-hunter",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p domain-hunter",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p domain-hunter"
+          }
         },
         commands: ["whois {domain}.{tld}"],
         links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/domain-hunter" }
@@ -397,11 +408,22 @@ function getFallbackConfig() {
         icon: "reddit",
         color: "FF4500",
         triggers: ["reddit", "subreddit", "r/"],
+        dependencies: [],
         auth: { required: false, note: "No API key required" },
         install: {
-          claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude reddit",
-          droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid reddit",
-          cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p reddit"
+          user: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude reddit",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid reddit",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode reddit",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex reddit"
+          },
+          project: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p reddit",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p reddit",
+            cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p reddit",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p reddit",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p reddit"
+          }
         },
         commands: ["python3 scripts/get_posts.py {subreddit}"],
         links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/reddit" }
@@ -413,14 +435,52 @@ function getFallbackConfig() {
         icon: "x",
         color: "000000",
         triggers: ["twitter", "X", "tweet"],
+        dependencies: [],
         auth: { required: true, note: "Requires TWITTERAPI_API_KEY" },
         install: {
-          claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude twitter",
-          droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid twitter",
-          cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p twitter"
+          user: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude twitter",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid twitter",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode twitter",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex twitter"
+          },
+          project: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p twitter",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p twitter",
+            cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p twitter",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p twitter",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p twitter"
+          }
         },
         commands: ["python3 scripts/get_user_info.py {username}"],
         links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/twitter" }
+      },
+      {
+        name: "producthunt",
+        version: "1.0.0",
+        description: "Search and retrieve content from Product Hunt via the GraphQL API",
+        icon: "producthunt",
+        color: "DA552F",
+        triggers: ["producthunt", "product hunt", "PH", "launch"],
+        dependencies: [],
+        auth: { required: true, note: "Requires PRODUCTHUNT_ACCESS_TOKEN" },
+        install: {
+          user: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude producthunt",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid producthunt",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode producthunt",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex producthunt"
+          },
+          project: {
+            claude: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p producthunt",
+            droid: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p producthunt",
+            cursor: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p producthunt",
+            opencode: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p producthunt",
+            codex: "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p producthunt"
+          }
+        },
+        commands: ["python3 scripts/get_posts.py --limit 20"],
+        links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/producthunt" }
       }
     ]
   };
