@@ -1,0 +1,244 @@
+#!/bin/bash
+
+# OPC Skills Installer
+# Install agent skills to Claude Code, Factory Droid, OpenCode, or custom directories
+
+set -e
+
+REPO_URL="https://github.com/ReScienceLab/opc-skills"
+SKILLS_DIR="skills"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+print_header() {
+    echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║       OPC Skills Installer             ║${NC}"
+    echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo ""
+}
+
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
+}
+
+# Available skills
+AVAILABLE_SKILLS=("reddit" "twitter" "domain-hunter" "all")
+
+show_help() {
+    echo "Usage: ./install.sh [OPTIONS] <skill>"
+    echo ""
+    echo "Skills:"
+    echo "  reddit         Reddit content search via public JSON API"
+    echo "  twitter        Twitter/X search via twitterapi.io"
+    echo "  domain-hunter  Domain search and price comparison"
+    echo "  all            Install all skills"
+    echo ""
+    echo "Options:"
+    echo "  -t, --tool TOOL    Target tool: claude, droid, opencode, cursor, custom"
+    echo "  -d, --dir DIR      Custom skills directory (use with -t custom)"
+    echo "  -p, --project      Install to current project instead of global"
+    echo "  -h, --help         Show this help"
+    echo ""
+    echo "Examples:"
+    echo "  ./install.sh -t claude reddit        # Install reddit skill to Claude Code"
+    echo "  ./install.sh -t droid all            # Install all skills to Factory Droid"
+    echo "  ./install.sh -t custom -d ~/.my-agent/skills twitter"
+    echo "  ./install.sh -t claude -p all        # Install to current project's .claude/skills"
+    echo ""
+    echo "Default directories:"
+    echo "  claude:   ~/.claude/skills (global) or .claude/skills (project)"
+    echo "  droid:    ~/.factory/skills (global) or .factory/skills (project)"
+    echo "  cursor:   .cursor/skills (project only)"
+    echo "  opencode: ~/.config/opencode/skills"
+}
+
+get_skills_dir() {
+    local tool=$1
+    local project=$2
+
+    case $tool in
+        claude)
+            if [ "$project" = "true" ]; then
+                echo ".claude/skills"
+            else
+                echo "$HOME/.claude/skills"
+            fi
+            ;;
+        droid)
+            if [ "$project" = "true" ]; then
+                echo ".factory/skills"
+            else
+                echo "$HOME/.factory/skills"
+            fi
+            ;;
+        cursor)
+            echo ".cursor/skills"
+            ;;
+        opencode)
+            echo "$HOME/.config/opencode/skills"
+            ;;
+        codex)
+            if [ "$project" = "true" ]; then
+                echo ".codex/skills"
+            else
+                echo "$HOME/.codex/skills"
+            fi
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+install_skill() {
+    local skill=$1
+    local target_dir=$2
+    local source_dir=$3
+
+    if [ ! -d "$source_dir/$skill" ]; then
+        print_error "Skill '$skill' not found in $source_dir"
+        return 1
+    fi
+
+    mkdir -p "$target_dir"
+    
+    if [ -d "$target_dir/$skill" ]; then
+        print_warning "Skill '$skill' already exists, updating..."
+        rm -rf "$target_dir/$skill"
+    fi
+
+    cp -r "$source_dir/$skill" "$target_dir/"
+    print_success "Installed $skill to $target_dir/$skill"
+}
+
+# Parse arguments
+TOOL=""
+CUSTOM_DIR=""
+PROJECT="false"
+SKILL=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--tool)
+            TOOL="$2"
+            shift 2
+            ;;
+        -d|--dir)
+            CUSTOM_DIR="$2"
+            shift 2
+            ;;
+        -p|--project)
+            PROJECT="true"
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            SKILL="$1"
+            shift
+            ;;
+    esac
+done
+
+# Validate inputs
+if [ -z "$SKILL" ]; then
+    print_header
+    echo "Select a skill to install:"
+    echo ""
+    echo "  1) reddit         - Reddit content search"
+    echo "  2) twitter        - Twitter/X search"
+    echo "  3) domain-hunter  - Domain price comparison"
+    echo "  4) all            - All skills"
+    echo ""
+    read -p "Enter choice [1-4]: " choice
+    case $choice in
+        1) SKILL="reddit" ;;
+        2) SKILL="twitter" ;;
+        3) SKILL="domain-hunter" ;;
+        4) SKILL="all" ;;
+        *) print_error "Invalid choice"; exit 1 ;;
+    esac
+fi
+
+if [ -z "$TOOL" ]; then
+    echo ""
+    echo "Select target tool:"
+    echo ""
+    echo "  1) claude    - Claude Code"
+    echo "  2) droid     - Factory Droid"
+    echo "  3) cursor    - Cursor"
+    echo "  4) opencode  - OpenCode"
+    echo "  5) codex     - OpenAI Codex"
+    echo "  6) custom    - Custom directory"
+    echo ""
+    read -p "Enter choice [1-6]: " choice
+    case $choice in
+        1) TOOL="claude" ;;
+        2) TOOL="droid" ;;
+        3) TOOL="cursor" ;;
+        4) TOOL="opencode" ;;
+        5) TOOL="codex" ;;
+        6) TOOL="custom" ;;
+        *) print_error "Invalid choice"; exit 1 ;;
+    esac
+fi
+
+# Get target directory
+if [ "$TOOL" = "custom" ]; then
+    if [ -z "$CUSTOM_DIR" ]; then
+        read -p "Enter custom skills directory: " CUSTOM_DIR
+    fi
+    TARGET_DIR="$CUSTOM_DIR"
+else
+    TARGET_DIR=$(get_skills_dir "$TOOL" "$PROJECT")
+fi
+
+if [ -z "$TARGET_DIR" ]; then
+    print_error "Unknown tool: $TOOL"
+    exit 1
+fi
+
+# Find source directory (script location)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOURCE_DIR="$SCRIPT_DIR/$SKILLS_DIR"
+
+if [ ! -d "$SOURCE_DIR" ]; then
+    print_error "Skills directory not found at $SOURCE_DIR"
+    print_warning "Make sure you're running this from the opc-skills repository"
+    exit 1
+fi
+
+print_header
+echo "Installing to: $TARGET_DIR"
+echo ""
+
+# Install skill(s)
+if [ "$SKILL" = "all" ]; then
+    for s in reddit twitter domain-hunter; do
+        install_skill "$s" "$TARGET_DIR" "$SOURCE_DIR"
+    done
+else
+    install_skill "$SKILL" "$TARGET_DIR" "$SOURCE_DIR"
+fi
+
+echo ""
+print_success "Installation complete!"
+echo ""
+echo "Next steps:"
+echo "  1. Restart your AI coding assistant"
+echo "  2. Try: 'Use the $SKILL skill to...'"
