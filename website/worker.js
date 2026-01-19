@@ -481,7 +481,7 @@ async function fetchSkillsConfig(ctx) {
       const cacheResponse = new Response(JSON.stringify(config), {
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600'
+          'Cache-Control': 'public, max-age=60'
         }
       });
       ctx.waitUntil(cache.put(cacheUrl, cacheResponse));
