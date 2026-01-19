@@ -464,7 +464,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
 async function fetchSkillsConfig(ctx) {
   const SKILLS_JSON_URL = 'https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skills.json';
   const cache = caches.default;
-  const cacheUrl = new URL('https://opc.dev/_cache/skills.json');
+  const cacheUrl = new URL('https://opc.dev/_cache/skills-v2.json');
   
   let response = await cache.match(cacheUrl);
   if (response) {
