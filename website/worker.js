@@ -109,13 +109,23 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
   <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/apple-touch-icon.png">
   <meta name="description" content="Curated agent skills for solopreneurs and indie hackers. One-click install for Claude, Droid, Cursor, and more.">
   <link rel="canonical" href="https://opc.dev/">
+  <meta property="og:title" content="OPC Skills - Agent Skills for One Person Companies">
+  <meta property="og:description" content="Curated agent skills for solopreneurs and indie hackers. One-click install for Claude, Droid, Cursor, and more.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/og-image.png">
+  <meta property="og:url" content="https://opc.dev/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OPC Skills - Agent Skills for One Person Companies">
+  <meta name="twitter:description" content="Curated agent skills for solopreneurs and indie hackers. One-click install for Claude, Droid, Cursor, and more.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --font: 'JetBrains Mono', monospace;
+      --font-pixel: 'Press Start 2P', cursive;
       --black: #000;
       --white: #fff;
       --gray-50: #f9fafb;
@@ -133,7 +143,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--black); }
     .logo-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
     .logo-icon img { width: 32px; height: 32px; object-fit: contain; }
-    .logo-text { font-size: 16px; font-weight: 700; }
+    .logo-text { font-family: var(--font-pixel); font-size: 10px; font-weight: 400; }
     nav { display: flex; align-items: center; gap: 16px; }
     nav a { font-size: 12px; color: var(--gray-600); text-decoration: none; }
     nav a:hover { color: var(--black); }
@@ -144,7 +154,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .hero { text-align: center; padding: 60px 24px; border-bottom: 1px solid var(--black); }
     .hero-banner { max-width: 560px; width: 100%; height: auto; margin: 0 auto 24px; border-radius: 8px; display: block; }
     .badge { display: inline-block; border: 1px solid var(--black); padding: 5px 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
-    h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.5px; }
+    h1 { font-family: var(--font-pixel); font-size: 20px; font-weight: 400; margin-bottom: 16px; letter-spacing: 0; line-height: 1.6; }
     .subtitle { font-size: 14px; color: var(--gray-600); max-width: 480px; margin: 0 auto 24px; }
     .hero-install { max-width: 600px; margin: 0 auto; width: 100%; }
     .hero-level-tabs { border-bottom: 1px solid var(--black); }
@@ -160,7 +170,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .hero-cmd .copy-btn:hover { opacity: 0.9; }
     
     main { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; text-align: center; }
+    .section-title { font-family: var(--font-pixel); font-size: 12px; font-weight: 400; margin-bottom: 24px; text-align: center; }
     
     .skills-grid { display: grid; gap: 20px; }
     .skill-card { border: 2px solid var(--black); padding: 24px; }
@@ -223,7 +233,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
       
       .hero { padding: 40px 16px; }
       .badge { font-size: 9px; padding: 4px 10px; }
-      h1 { font-size: 24px; line-height: 1.3; }
+      h1 { font-size: 14px; line-height: 1.8; }
       .subtitle { font-size: 13px; }
       .hero-tabs { flex-wrap: wrap; }
       .hero-tab { flex: 1 1 auto; min-width: 60px; padding: 6px 8px; font-size: 10px; }
@@ -264,7 +274,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     }
     
     @media (max-width: 400px) {
-      h1 { font-size: 20px; }
+      h1 { font-size: 11px; }
       .skill-title h3 { font-size: 13px; }
       .platform-tabs .tab-btn { padding: 6px 1px; font-size: 7px; }
       .level-tabs .tab-btn { font-size: 9px; padding: 8px 4px; }
