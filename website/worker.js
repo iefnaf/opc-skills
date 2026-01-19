@@ -153,6 +153,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     .hero-tab { flex: 1; padding: 8px 12px; background: var(--white); border: none; font-family: var(--font); font-size: 11px; cursor: pointer; border-right: 1px solid var(--black); }
     .hero-tab:last-child { border-right: none; }
     .hero-tab.active { background: var(--black); color: var(--white); }
+    .hero-tab.disabled { opacity: 0.4; cursor: not-allowed; }
     .hero-cmd { display: flex; border: 1px solid var(--black); }
     .hero-cmd code { flex: 1; padding: 12px; font-size: 11px; background: var(--gray-100); overflow-x: auto; white-space: nowrap; }
     .hero-cmd .copy-btn { padding: 12px 16px; background: var(--black); color: var(--white); border: none; font-family: var(--font); font-size: 11px; cursor: pointer; border-left: 1px solid var(--black); }
@@ -346,9 +347,22 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
       });
     }
     
+    const projectOnlyTools = ['cursor'];
+    
     function updateHeroCmd() {
-      const level = document.querySelector('.hero-level-tabs .hero-tab.active').dataset.level;
       const tool = document.querySelector('.hero-tool-tabs .hero-tab.active').dataset.tool;
+      const userTab = document.querySelector('.hero-level-tabs .hero-tab[data-level="user"]');
+      const projectTab = document.querySelector('.hero-level-tabs .hero-tab[data-level="project"]');
+      
+      if (projectOnlyTools.includes(tool)) {
+        userTab.classList.add('disabled');
+        userTab.classList.remove('active');
+        projectTab.classList.add('active');
+      } else {
+        userTab.classList.remove('disabled');
+      }
+      
+      const level = document.querySelector('.hero-level-tabs .hero-tab.active').dataset.level;
       const levelFlag = level === 'project' ? ' -p' : '';
       const cmd = 'curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t ' + tool + levelFlag + ' all';
       const code = document.getElementById('hero-cmd-code');
@@ -358,6 +372,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
     
     document.querySelectorAll('.hero-level-tabs .hero-tab').forEach(tab => {
       tab.addEventListener('click', () => {
+        if (tab.classList.contains('disabled')) return;
         document.querySelectorAll('.hero-level-tabs .hero-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         updateHeroCmd();
