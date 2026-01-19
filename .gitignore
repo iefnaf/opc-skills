@@ -31,3 +31,6 @@ node_modules/
 
 # Claude
 .claude/
+
+# Skill archive (temporary files from skill runs)
+.skill-archive/
