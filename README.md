@@ -14,16 +14,16 @@ For more information about the Agent Skills standard, see [agentskills.io](http:
 
 ## Included Skills
 
-| Skill | Description |
-|-------|-------------|
-| [requesthunt](./skills/requesthunt) | Research user demand from Reddit, X, and GitHub |
-| [domain-hunter](./skills/domain-hunter) | Find domains, compare registrar prices, and discover promo codes |
-| [logo-creator](./skills/logo-creator) | Create logos with AI, crop, remove background, export as SVG |
-| [banner-creator](./skills/banner-creator) | Create banners for GitHub, Twitter, LinkedIn, etc. |
-| [nanobanana](./skills/nanobanana) | Generate images using Gemini 3 Pro Image (Nano Banana Pro) |
-| [reddit](./skills/reddit) | Search and retrieve content from Reddit via the public JSON API |
-| [twitter](./skills/twitter) | Search and retrieve content from Twitter/X via twitterapi.io |
-| [producthunt](./skills/producthunt) | Search Product Hunt posts, topics, users, and collections |
+| | Skill | Description |
+|:---:|-------|-------------|
+| <img src="./skill-logos/requesthunt.svg" width="24"> | [requesthunt](./skills/requesthunt) | Research user demand from Reddit, X, and GitHub |
+| <img src="./skill-logos/domain-hunter.svg" width="24"> | [domain-hunter](./skills/domain-hunter) | Find domains, compare registrar prices, and discover promo codes |
+| <img src="./skill-logos/logo-creator.svg" width="24"> | [logo-creator](./skills/logo-creator) | Create logos with AI, crop, remove background, export as SVG |
+| <img src="./skill-logos/banner-creator.svg" width="24"> | [banner-creator](./skills/banner-creator) | Create banners for GitHub, Twitter, LinkedIn, etc. |
+| <img src="./skill-logos/nanobanana.svg" width="24"> | [nanobanana](./skills/nanobanana) | Generate images using Gemini 3 Pro Image (Nano Banana Pro) |
+| <img src="./skill-logos/reddit.svg" width="24"> | [reddit](./skills/reddit) | Search and retrieve content from Reddit via the public JSON API |
+| <img src="./skill-logos/twitter.svg" width="24"> | [twitter](./skills/twitter) | Search and retrieve content from Twitter/X via twitterapi.io |
+| <img src="./skill-logos/producthunt.svg" width="24"> | [producthunt](./skills/producthunt) | Search Product Hunt posts, topics, users, and collections |
 
 ## Quick Install
 

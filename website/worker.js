@@ -42,7 +42,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
         <div class="skill-card">
           <div class="skill-header">
             <div class="skill-icon">
-              <img src="https://cdn.simpleicons.org/${s.icon}/${s.color}" alt="${s.name}" onerror="this.src='${config.logo}'">
+              <img src="${s.logo || `https://cdn.simpleicons.org/${s.icon}/${s.color}`}" alt="${s.name}" onerror="this.src='https://cdn.simpleicons.org/${s.icon}/${s.color}'">
             </div>
             <div class="skill-title">
               <h3>${s.name}</h3>

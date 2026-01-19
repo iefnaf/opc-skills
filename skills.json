@@ -10,6 +10,7 @@
       "name": "requesthunt",
       "version": "1.0.0",
       "description": "Generate user demand research reports from real user feedback. Scrape and analyze feature requests, complaints, and questions from Reddit, X, and GitHub.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/requesthunt.svg",
       "icon": "globe",
       "color": "6366F1",
       "triggers": [
@@ -58,6 +59,7 @@
       "name": "domain-hunter",
       "version": "1.0.0",
       "description": "Search domains, compare registrar prices, and find promo codes. Help users find and purchase domain names at the best price.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/domain-hunter.svg",
       "icon": "globe",
       "color": "4A90D9",
       "triggers": [
@@ -105,6 +107,7 @@
       "name": "logo-creator",
       "version": "1.0.0",
       "description": "Create logos using AI image generation. Discuss style/ratio, generate variations, iterate with user feedback, crop, remove background, and export as SVG.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/logo-creator.svg",
       "icon": "image",
       "color": "8B5CF6",
       "triggers": [
@@ -156,6 +159,7 @@
       "name": "banner-creator",
       "version": "1.0.0",
       "description": "Create banners using AI image generation. Discuss format/style, generate variations, iterate with user feedback, crop to target ratio for GitHub, Twitter, LinkedIn, etc.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/banner-creator.svg",
       "icon": "image",
       "color": "F59E0B",
       "triggers": [
@@ -205,6 +209,7 @@
       "name": "nanobanana",
       "version": "1.0.0",
       "description": "Generate and edit images using Google Gemini 3 Pro Image (Nano Banana Pro). Supports text-to-image, image editing, aspect ratios, and 2K/4K output.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/nanobanana.svg",
       "icon": "googlegemini",
       "color": "8E75B2",
       "triggers": [
@@ -251,6 +256,7 @@
       "name": "reddit",
       "version": "1.0.0",
       "description": "Search and retrieve content from Reddit. Get posts, comments, subreddit info, and user profiles via the public JSON API.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/reddit.svg",
       "icon": "reddit",
       "color": "FF4500",
       "triggers": [
@@ -295,6 +301,7 @@
       "name": "twitter",
       "version": "1.0.0",
       "description": "Search and retrieve content from Twitter/X. Get user info, tweets, replies, followers, communities, spaces, and trends via twitterapi.io.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/twitter.svg",
       "icon": "x",
       "color": "000000",
       "triggers": [
@@ -340,6 +347,7 @@
       "name": "producthunt",
       "version": "1.0.0",
       "description": "Search and retrieve content from Product Hunt. Get posts, topics, users, and collections via the GraphQL API.",
+      "logo": "https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skill-logos/producthunt.svg",
       "icon": "producthunt",
       "color": "DA552F",
       "triggers": [
