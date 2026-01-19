@@ -19,11 +19,14 @@ Create professional logos through AI image generation with an iterative design p
 ## Prerequisites
 
 **Required API Keys (set in environment):**
+- `GEMINI_API_KEY` - Get from [Google AI Studio](https://aistudio.google.com/apikey)
 - `REMOVE_BG_API_KEY` - Get from [remove.bg](https://www.remove.bg/api)
 - `RECRAFT_API_KEY` - Get from [recraft.ai](https://www.recraft.ai/)
 
-**Required Tools:**
-- `nano-banana-pro___generate_image` - AI image generation
+**Required Skills:**
+- `nanobanana` - AI image generation (Gemini 3 Pro Image)
+
+**Optional Tools:**
 - `chrome-devtools` MCP - For previewing logos in browser
 
 ## File Output Location
@@ -87,19 +90,20 @@ Before generating, gather requirements from user:
 
 ### Step 2: Generate Logo Variations
 
-Generate 20 logo variations (default) using `nano-banana-pro___generate_image`:
+Generate 20 logo variations (default) using the `nanobanana` skill:
 
-```
-nano-banana-pro___generate_image(
-  prompt: "{style} logo for {brand}, {description}, {colors}",
-  aspectRatio: "1:1",
-  fileName: "/path/to/project/logos/logo-01.png"
-)
+```bash
+# Generate single logo
+python3 <nanobanana_skill_dir>/scripts/generate.py "{style} logo for {brand}, {description}, {colors}" \
+  --ratio 1:1 -o .skill-archive/logo-creator/<date-name>/logo-01.png
+
+# Batch generate 20 logos
+python3 <nanobanana_skill_dir>/scripts/batch_generate.py "{style} logo for {brand}, {description}, {colors}" \
+  -n 20 --ratio 1:1 -d .skill-archive/logo-creator/<date-name> -p logo
 ```
 
 **Guidelines:**
-- Generate in batches of 10 (API rate limit: 20/minute)
-- Wait 60 seconds between batches if hitting limits
+- Use batch_generate.py for multiple variations (includes auto-delay)
 - Save to `.skill-archive/logo-creator/<yyyy-mm-dd-summaryname>/` directory
 - Use sequential naming: `logo-01.png`, `logo-02.png`, etc.
 
@@ -200,9 +204,9 @@ Cute {animal/character} mascot logo, friendly expression, {style} style, {colors
 Letter "{letter}" logo, modern typography, {style} design, {colors}, clean professional look
 ```
 
-### Aspect Ratios for nano-banana
+### Supported Aspect Ratios
 
-- `1:1` - Square
+- `1:1` - Square (default for logos)
 - `2:3`, `3:2` - Portrait/Landscape
 - `3:4`, `4:3` - Standard
 - `4:5`, `5:4` - Photo

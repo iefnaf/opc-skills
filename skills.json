@@ -214,12 +214,12 @@
       "icon": "image",
       "color": "8B5CF6",
       "triggers": ["logo", "brand", "icon", "favicon", "mascot", "emblem", "create logo", "design logo"],
-      "dependencies": [],
+      "dependencies": ["nanobanana"],
       "auth": {
         "required": true,
         "type": "api_key",
-        "env_var": "REMOVE_BG_API_KEY, RECRAFT_API_KEY",
-        "note": "Requires remove.bg API key and Recraft API key for background removal and SVG conversion"
+        "env_var": "GEMINI_API_KEY, REMOVE_BG_API_KEY, RECRAFT_API_KEY",
+        "note": "Requires Gemini API key for image generation, remove.bg and Recraft API keys for background removal and SVG conversion"
       },
       "install": {
         "user": {
@@ -237,7 +237,7 @@
         }
       },
       "commands": [
-        "nano-banana-pro___generate_image(prompt, aspectRatio, fileName)",
+        "python3 <nanobanana>/scripts/batch_generate.py \"{prompt}\" -n 20 --ratio 1:1 -d ./logos -p logo",
         "python3 scripts/crop_logo.py {input.png} {output.png}",
         "python3 scripts/remove_bg.py {input.png} {output.png}",
         "python3 scripts/vectorize.py {input.png} {output.svg}"
@@ -254,11 +254,12 @@
       "icon": "image",
       "color": "F59E0B",
       "triggers": ["banner", "header", "hero image", "cover image", "create banner", "github banner", "twitter header", "readme banner"],
-      "dependencies": [],
+      "dependencies": ["nanobanana"],
       "auth": {
-        "required": false,
-        "type": null,
-        "note": "Uses nano-banana-pro for image generation (no additional API keys needed)"
+        "required": true,
+        "type": "api_key",
+        "env_var": "GEMINI_API_KEY",
+        "note": "Requires Gemini API key for image generation (get from aistudio.google.com/apikey)"
       },
       "install": {
         "user": {
@@ -276,12 +277,51 @@
         }
       },
       "commands": [
-        "nano-banana-pro___generate_image(prompt, aspectRatio: '21:9', fileName)",
+        "python3 <nanobanana>/scripts/batch_generate.py \"{prompt}\" -n 20 --ratio 21:9 -d ./banners -p banner",
         "python3 scripts/crop_banner.py {input.png} {output.png} --ratio 2:1 --width 1280"
       ],
       "links": {
         "github": "https://github.com/ReScienceLab/opc-skills/tree/main/skills/banner-creator",
         "example": "https://github.com/ReScienceLab/opc-skills/blob/main/skills/banner-creator/examples/opc-banner-creation.md"
+      }
+    },
+    {
+      "name": "nanobanana",
+      "version": "1.0.0",
+      "description": "Generate and edit images using Google Gemini 3 Pro Image (Nano Banana Pro). Supports text-to-image, image editing, aspect ratios, and 2K/4K output.",
+      "icon": "image",
+      "color": "FFD700",
+      "triggers": ["generate image", "create image", "nano banana", "nanobanana", "gemini image", "AI image"],
+      "dependencies": [],
+      "auth": {
+        "required": true,
+        "type": "api_key",
+        "env_var": "GEMINI_API_KEY",
+        "note": "Get API key from Google AI Studio (aistudio.google.com/apikey)"
+      },
+      "install": {
+        "user": {
+          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude nanobanana",
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid nanobanana",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode nanobanana",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex nanobanana"
+        },
+        "project": {
+          "claude": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t claude -p nanobanana",
+          "droid": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t droid -p nanobanana",
+          "cursor": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t cursor -p nanobanana",
+          "opencode": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t opencode -p nanobanana",
+          "codex": "curl -fsSL https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh | bash -s -- -t codex -p nanobanana"
+        }
+      },
+      "commands": [
+        "python3 scripts/generate.py \"{prompt}\" -o {output.png}",
+        "python3 scripts/generate.py \"{prompt}\" -i {input.jpg} -o {output.png}",
+        "python3 scripts/batch_generate.py \"{prompt}\" -n 20 -d ./images -p image"
+      ],
+      "links": {
+        "github": "https://github.com/ReScienceLab/opc-skills/tree/main/skills/nanobanana",
+        "docs": "https://ai.google.dev/gemini-api/docs/image-generation"
       }
     }
   ]

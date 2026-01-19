@@ -18,8 +18,13 @@ Create professional banners through AI image generation with an iterative design
 
 ## Prerequisites
 
-**Required Tools:**
-- `nano-banana-pro___generate_image` - AI image generation
+**Required API Keys (set in environment):**
+- `GEMINI_API_KEY` - Get from [Google AI Studio](https://aistudio.google.com/apikey)
+
+**Required Skills:**
+- `nanobanana` - AI image generation (Gemini 3 Pro Image)
+
+**Optional Tools:**
 - `chrome-devtools` MCP - For previewing banners in browser
 
 ## File Output Location
@@ -79,31 +84,27 @@ Before generating, gather requirements from user:
 
 ### Step 2: Generate Banner Variations
 
-Generate 20 banner variations using `nano-banana-pro___generate_image`:
+Generate 20 banner variations using the `nanobanana` skill:
 
-```
-nano-banana-pro___generate_image(
-  prompt: "{style} banner for {brand}, {description}, {text elements}",
-  aspectRatio: "21:9",
-  fileName: "/path/to/.skill-archive/banner-creator/<date-name>/banner-01.png"
-)
+```bash
+# Generate single banner
+python3 <nanobanana_skill_dir>/scripts/generate.py "{style} banner for {brand}, {description}, {text elements}" \
+  --ratio 21:9 -o .skill-archive/banner-creator/<date-name>/banner-01.png
+
+# Batch generate 20 banners
+python3 <nanobanana_skill_dir>/scripts/batch_generate.py "{style} banner for {brand}, {description}, {text elements}" \
+  -n 20 --ratio 21:9 -d .skill-archive/banner-creator/<date-name> -p banner
 ```
 
 **Guidelines:**
 - Generate at `21:9` ratio (widest available), crop later to target
-- Generate in batches of 10 (API rate limit: 20/minute)
-- Wait 60 seconds between batches if hitting limits
+- Use batch_generate.py for multiple variations (includes auto-delay)
 - Use sequential naming: `banner-01.png`, `banner-02.png`, etc.
 
-**Character Consistency:**
-If incorporating an existing logo character, use the `image` parameter:
-```
-nano-banana-pro___generate_image(
-  prompt: "...",
-  aspectRatio: "21:9",
-  image: "/path/to/existing-logo.png",
-  fileName: "..."
-)
+**Image Editing (for incorporating existing logo):**
+```bash
+python3 <nanobanana_skill_dir>/scripts/generate.py "add {logo character} to the left side of the banner" \
+  -i /path/to/existing-logo.png --ratio 21:9 -o banner-with-logo.png
 ```
 
 ### Step 3: Create HTML Preview
@@ -189,7 +190,7 @@ Abstract {style} banner, {colors} gradient, geometric patterns, modern tech feel
 {Style} illustration banner, {scene description}, {character} in {action}, "{brand}" text overlay, {colors}
 ```
 
-### Aspect Ratios for nano-banana
+### Supported Aspect Ratios
 
 Generate at widest ratio, then crop:
 - `21:9` - Ultra-wide (recommended for generation)
