@@ -32,5 +32,8 @@ node_modules/
 # Claude
 .claude/
 
+# Factory
+.factory/
+
 # Skill archive (temporary files from skill runs)
 .skill-archive/
