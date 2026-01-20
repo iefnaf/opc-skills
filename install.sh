@@ -459,7 +459,7 @@ download_skills_batch() {
     
     # Download entire repo as tarball (single request)
     print_info "Downloading skills package..."
-    curl -fsSL "https://api.github.com/repos/ReScienceLab/opc-skills/tarball" \
+    curl -fsSL "https://github.com/ReScienceLab/opc-skills/archive/refs/heads/main.tar.gz" \
         -o "$temp_tar" 2>/dev/null || {
         print_error "Failed to download skills package"
         return 1
@@ -473,8 +473,8 @@ download_skills_batch() {
         return 1
     }
     
-    # Find extracted directory (contains commit hash in name)
-    local extracted_dir=$(ls -d "$temp_dir"/ReScienceLab-opc-skills-* 2>/dev/null | head -1)
+    # Find extracted directory (opc-skills-main for direct archive URL)
+    local extracted_dir=$(ls -d "$temp_dir"/opc-skills-* 2>/dev/null | head -1)
     
     if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir/skills" ]; then
         print_error "Invalid skills package structure"
