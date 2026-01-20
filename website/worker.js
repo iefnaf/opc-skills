@@ -36,8 +36,43 @@ export default {
     }
     
     if (url.pathname === '/robots.txt') {
-      return new Response(`User-agent: *
+      return new Response(`# OPC Skills - AI Agent Skills
+# We explicitly allow AI bots for GEO (Generative Engine Optimization)
+
+User-agent: *
 Allow: /
+
+# AI Search Engines - Allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
 Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain' } });
     }
 
