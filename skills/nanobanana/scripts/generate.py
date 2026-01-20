@@ -134,22 +134,22 @@ def generate_image(
     
     # Add image config if needed
     if aspect_ratio or image_size:
-        image_config = {}
+        image_config_dict = {}
         if aspect_ratio:
             if aspect_ratio not in VALID_ASPECT_RATIOS:
                 print(f"Warning: Invalid aspect ratio '{aspect_ratio}'. Valid options: {VALID_ASPECT_RATIOS}")
             else:
-                image_config["aspect_ratio"] = aspect_ratio
+                image_config_dict["aspect_ratio"] = aspect_ratio
         if image_size:
             if image_size.upper() not in VALID_SIZES:
                 print(f"Warning: Invalid size '{image_size}'. Valid options: {VALID_SIZES}")
             else:
-                image_config["image_size"] = image_size.upper()
+                image_config_dict["image_size"] = image_size.upper()
         
-        if image_config:
+        if image_config_dict:
             generate_config = types.GenerateContentConfig(
                 response_modalities=["IMAGE", "TEXT"],
-                **image_config
+                image_config=types.ImageConfig(**image_config_dict)
             )
     
     if verbose:

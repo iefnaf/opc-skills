@@ -5,14 +5,44 @@ Batch image generation using Nano Banana (Gemini 3 Pro Image).
 Usage:
     python batch_generate.py "pixel art logo" -n 20 -d ./logos -p logo
     python batch_generate.py "product photo" -n 10 --ratio 1:1 --size 4K
+    python batch_generate.py "landscape" -n 20 --parallel 5  # 5 concurrent requests
 """
 
 import argparse
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from threading import Lock
 
 from generate import generate_image, VALID_ASPECT_RATIOS
+
+# Thread-safe print lock
+print_lock = Lock()
+
+
+def _generate_single(args_tuple):
+    """Worker function for parallel generation."""
+    i, count, filepath, prompt, aspect_ratio, image_size, verbose = args_tuple
+    filename = filepath.name
+    
+    result = generate_image(
+        prompt=prompt,
+        output_path=str(filepath),
+        aspect_ratio=aspect_ratio,
+        image_size=image_size,
+        verbose=False,
+    )
+    
+    result["index"] = i
+    result["filename"] = filename
+    
+    if verbose:
+        with print_lock:
+            status = "OK" if result["success"] else f"FAILED: {result['error']}"
+            print(f"[{i}/{count}] {filename}: {status}")
+    
+    return result
 
 
 def batch_generate(
@@ -23,6 +53,7 @@ def batch_generate(
     aspect_ratio: str = None,
     image_size: str = None,
     delay: float = 3.0,
+    parallel: int = 1,
     verbose: bool = True,
 ) -> list[dict]:
     """
@@ -35,7 +66,8 @@ def batch_generate(
         prefix: Filename prefix
         aspect_ratio: Aspect ratio (1:1, 16:9, etc.)
         image_size: Resolution (2K or 4K)
-        delay: Seconds to wait between generations
+        delay: Seconds to wait between generations (ignored if parallel > 1)
+        parallel: Number of concurrent requests (default: 1, max recommended: 5)
         verbose: Print progress
     
     Returns:
@@ -43,9 +75,6 @@ def batch_generate(
     """
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
-    
-    results = []
-    success_count = 0
     
     if verbose:
         print(f"Generating {count} images...")
@@ -55,36 +84,38 @@ def batch_generate(
             print(f"Aspect ratio: {aspect_ratio}")
         if image_size:
             print(f"Size: {image_size}")
+        if parallel > 1:
+            print(f"Parallel workers: {parallel}")
         print()
     
+    # Prepare tasks
+    tasks = []
     for i in range(1, count + 1):
         filename = f"{prefix}-{str(i).zfill(2)}.png"
         filepath = output_path / filename
-        
-        if verbose:
-            print(f"[{i}/{count}] Generating {filename}...", end=" ", flush=True)
-        
-        result = generate_image(
-            prompt=prompt,
-            output_path=str(filepath),
-            aspect_ratio=aspect_ratio,
-            image_size=image_size,
-            verbose=False,
-        )
-        
-        results.append(result)
-        
-        if result["success"]:
-            success_count += 1
-            if verbose:
-                print("OK")
-        else:
-            if verbose:
-                print(f"FAILED: {result['error']}")
-        
-        # Delay between requests (except for last one)
-        if i < count and delay > 0:
-            time.sleep(delay)
+        tasks.append((i, count, filepath, prompt, aspect_ratio, image_size, verbose))
+    
+    results = []
+    
+    if parallel > 1:
+        # Parallel execution
+        with ThreadPoolExecutor(max_workers=parallel) as executor:
+            futures = [executor.submit(_generate_single, task) for task in tasks]
+            for future in as_completed(futures):
+                results.append(future.result())
+    else:
+        # Sequential execution with delay
+        for task in tasks:
+            result = _generate_single(task)
+            results.append(result)
+            # Delay between requests (except for last one)
+            if task[0] < count and delay > 0:
+                time.sleep(delay)
+    
+    # Sort results by index
+    results.sort(key=lambda x: x["index"])
+    
+    success_count = sum(1 for r in results if r["success"])
     
     if verbose:
         print()
@@ -118,7 +149,9 @@ Examples:
     parser.add_argument("-s", "--size", choices=["2K", "4K", "2k", "4k"],
                        help="Image size (2K or 4K)")
     parser.add_argument("--delay", type=float, default=3.0,
-                       help="Delay between generations in seconds (default: 3)")
+                       help="Delay between generations in seconds (default: 3, ignored if --parallel > 1)")
+    parser.add_argument("--parallel", type=int, default=1,
+                       help="Number of concurrent requests (default: 1, max recommended: 5)")
     parser.add_argument("-q", "--quiet", action="store_true",
                        help="Suppress progress output")
     
@@ -132,6 +165,7 @@ Examples:
         aspect_ratio=args.ratio,
         image_size=args.size.upper() if args.size else None,
         delay=args.delay,
+        parallel=args.parallel,
         verbose=not args.quiet,
     )
     
