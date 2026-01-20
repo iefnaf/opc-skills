@@ -38,5 +38,6 @@ node_modules/
 # Cursor
 .cursor/
 
-# Skill archive (temporary files from skill runs)
+# Archives
 .skill-archive/
+.bug-archive/

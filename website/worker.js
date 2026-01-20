@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -9,7 +11,7 @@ export default {
       
       const skillUrls = skills.map(s => `
   <url>
-    <loc>https://opc.dev/#skill-${s.name}</loc>
+    <loc>https://opc.dev/skills/${s.name}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -39,6 +41,22 @@ Allow: /
 Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain' } });
     }
 
+    // Serve skill images from GitHub
+    const imgMatch = url.pathname.match(/^\/skills\/([a-z-]+)\/examples\/images\/(.+)$/);
+    if (imgMatch) {
+      const [, skillName, fileName] = imgMatch;
+      const contentType = fileName.endsWith('.svg') ? 'image/svg+xml' :
+                          fileName.endsWith('.png') ? 'image/png' : 'image/jpeg';
+      const imgUrl = `https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skills/${skillName}/examples/images/${fileName}`;
+      try {
+        const imgRes = await fetch(imgUrl, { headers: { 'User-Agent': 'OPC-Skills-Website' } });
+        if (imgRes.ok) {
+          return new Response(imgRes.body, { headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=3600' } });
+        }
+      } catch (e) {}
+      return new Response('Image not found', { status: 404 });
+    }
+
     // Serve install.sh - proxy from GitHub raw
     if (url.pathname === '/install.sh') {
       const installScript = await fetch('https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/install.sh');
@@ -60,6 +78,12 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
           'Cache-Control': 'public, max-age=300'
         }
       });
+    }
+
+    // Serve individual skill pages
+    const skillMatch = url.pathname.match(/^\/skills\/([a-z-]+)$/);
+    if (skillMatch) {
+      return renderSkillPage(skillMatch[1], ctx);
     }
 
     // Fetch skills from config
@@ -130,7 +154,7 @@ Sitemap: https://opc.dev/sitemap.xml`, { headers: { 'Content-Type': 'text/plain'
               <img src="${s.logo || `https://cdn.simpleicons.org/${s.icon}/${s.color}`}" alt="${s.name} skill icon" loading="lazy" decoding="async" width="28" height="28" onerror="this.src='https://cdn.simpleicons.org/${s.icon}/${s.color}'">
             </div>
             <div class="skill-title">
-              <h3>${s.name}</h3>
+              <h3><a href="/skills/${s.name}" style="color:inherit;text-decoration:none;">${s.name}</a></h3>
               <span class="version">v${s.version}</span>
             </div>
             ${s.auth.required ? `<span class="auth-tag paid">API Key</span>` : `<span class="auth-tag free">Free</span>`}
@@ -737,4 +761,239 @@ function getFallbackConfig() {
       }
     ]
   };
+}
+
+// Markdown to HTML converter using marked
+function markdownToHtml(md) {
+  if (!md) return '';
+  // Remove YAML frontmatter (must start with ---\n at position 0)
+  if (md.startsWith('---\n')) {
+    md = md.replace(/^---\n[\s\S]*?\n---\n/, '');
+  }
+  // Convert using marked (supports GFM tables, etc.)
+  let html = marked.parse(md);
+  // Wrap images in figure tags for grid layout
+  html = html.replace(/<img src="([^"]+)" alt="([^"]*)">/g, 
+    '<figure class="example-img"><img src="$1" alt="$2" loading="lazy"><figcaption>$2</figcaption></figure>');
+  return html;
+}
+
+// Render individual skill page
+async function renderSkillPage(skillName, ctx) {
+  const config = await fetchSkillsConfig(ctx);
+  const skill = config.skills.find(s => s.name === skillName);
+  
+  if (!skill) {
+    return new Response('Skill not found', { status: 404, headers: { 'Content-Type': 'text/plain' } });
+  }
+
+  // Fetch SKILL.md from GitHub
+  const mdUrl = `https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/skills/${skillName}/SKILL.md`;
+  let markdown = '';
+  try {
+    const mdRes = await fetch(mdUrl, { headers: { 'User-Agent': 'OPC-Skills-Website' } });
+    if (mdRes.ok) markdown = await mdRes.text();
+  } catch (e) {}
+  
+  const content = markdownToHtml(markdown);
+
+  // Fetch example markdown if skill has example link
+  let exampleContent = '';
+  if (skill.links.example) {
+    // Convert GitHub blob URL to raw URL
+    const exampleRawUrl = skill.links.example
+      .replace('github.com', 'raw.githubusercontent.com')
+      .replace('/blob/', '/');
+    try {
+      const exRes = await fetch(exampleRawUrl, { headers: { 'User-Agent': 'OPC-Skills-Website' } });
+      if (exRes.ok) {
+        const exampleMd = await exRes.text();
+        exampleContent = markdownToHtml(exampleMd);
+      }
+    } catch (e) {}
+  }
+
+  // JSON-LD for this skill
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": skill.name,
+        "description": skill.description,
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform",
+        "url": `https://opc.dev/skills/${skill.name}`
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://opc.dev/" },
+          { "@type": "ListItem", "position": 2, "name": "Skills", "item": "https://opc.dev/" },
+          { "@type": "ListItem", "position": 3, "name": skill.name, "item": `https://opc.dev/skills/${skill.name}` }
+        ]
+      }
+    ]
+  };
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${skill.name} - OPC Skills | Agent Skill for Claude, Droid, Cursor</title>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/apple-touch-icon.png">
+  <meta name="description" content="${skill.description}">
+  <meta name="keywords" content="${skill.name}, ${skill.triggers.join(', ')}, agent skill, claude skill, AI tool">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="ReScience Lab">
+  <meta name="theme-color" content="#${skill.color}">
+  <link rel="canonical" href="https://opc.dev/skills/${skill.name}">
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+  <meta property="og:title" content="${skill.name} - OPC Skills">
+  <meta property="og:description" content="${skill.description}">
+  <meta property="og:image" content="${skill.logo || `https://cdn.simpleicons.org/${skill.icon}/${skill.color}`}">
+  <meta property="og:url" content="https://opc.dev/skills/${skill.name}">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --font: 'JetBrains Mono', monospace; --font-pixel: 'Press Start 2P', cursive; --black: #000; --white: #fff; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-400: #9ca3af; --gray-600: #4b5563; --green: #22c55e; }
+    body { font-family: var(--font); background: var(--white); color: var(--black); line-height: 1.6; }
+    header { position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--black); z-index: 100; }
+    .header-inner { max-width: 900px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--black); }
+    .logo-icon img { width: 32px; height: 32px; }
+    .logo-text { font-family: var(--font-pixel); font-size: 10px; }
+    nav a { font-size: 12px; color: var(--gray-600); text-decoration: none; margin-left: 16px; }
+    nav a:hover { color: var(--black); }
+    main { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .breadcrumb { font-size: 12px; color: var(--gray-600); margin-bottom: 24px; }
+    .breadcrumb a { color: var(--gray-600); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--black); }
+    .skill-hero { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--gray-200); }
+    .skill-hero img { width: 64px; height: 64px; }
+    .skill-hero h1 { font-size: 24px; font-weight: 700; }
+    .skill-hero .version { font-size: 12px; color: var(--gray-400); margin-left: 8px; }
+    .skill-hero .auth-tag { font-size: 11px; padding: 4px 10px; margin-left: 12px; }
+    .auth-tag.free { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .auth-tag.paid { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+    .skill-desc { font-size: 14px; color: var(--gray-600); margin-bottom: 24px; }
+    .skill-triggers { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .trigger { font-size: 10px; padding: 4px 10px; background: var(--gray-100); border: 1px solid var(--gray-200); }
+    .skill-content { margin-bottom: 32px; }
+    .skill-content h1 { font-size: 20px; margin: 24px 0 12px; border-bottom: 1px solid var(--gray-200); padding-bottom: 8px; }
+    .skill-content h2 { font-size: 16px; margin: 20px 0 10px; }
+    .skill-content h3 { font-size: 14px; margin: 16px 0 8px; }
+    .skill-content p { margin: 12px 0; font-size: 14px; line-height: 1.6; }
+    .skill-content ul, .skill-content ol { margin: 8px 0 8px 24px; }
+    .skill-content ul { list-style: disc; }
+    .skill-content ol { list-style: decimal; }
+    .skill-content li { font-size: 14px; margin: 4px 0; line-height: 1.5; }
+    .skill-content strong { font-weight: 600; }
+    .skill-content code { font-size: 12px; background: var(--gray-100); padding: 2px 6px; border-radius: 3px; }
+    .skill-content pre { background: var(--gray-100); padding: 16px; overflow-x: auto; margin: 12px 0; border: 1px solid var(--gray-200); white-space: pre; font-size: 12px; line-height: 1.5; }
+    .skill-content pre code { background: none; padding: 0; white-space: pre; }
+    .skill-content a { color: #2563eb; }
+    .skill-content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+    .skill-content th, .skill-content td { border: 1px solid var(--gray-200); padding: 8px 12px; text-align: left; }
+    .skill-content th { background: var(--gray-100); font-weight: 600; }
+    .skill-content ul { list-style: disc; margin-left: 24px; }
+    .skill-content blockquote { border-left: 3px solid var(--gray-400); padding: 8px 16px; margin: 12px 0; background: var(--gray-100); font-style: italic; }
+    .skill-content hr { border: none; border-top: 1px solid var(--gray-200); margin: 24px 0; }
+    .skill-content .example-img { display: inline-block; margin: 8px; vertical-align: top; max-width: 200px; text-align: center; }
+    .skill-content .example-img img { width: 100%; height: auto; border: 1px solid var(--gray-200); border-radius: 8px; background: white; }
+    .skill-content .example-img figcaption { font-size: 11px; color: var(--gray-600); margin-top: 4px; }
+    .skill-tabs { display: flex; border-bottom: 2px solid var(--black); margin-bottom: 0; }
+    .skill-tab { padding: 12px 24px; background: var(--gray-100); border: none; cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 600; border-right: 1px solid var(--gray-200); }
+    .skill-tab:hover { background: var(--gray-200); }
+    .skill-tab.active { background: var(--black); color: var(--white); }
+    .tab-content { display: none; border: 2px solid var(--black); border-top: none; padding: 24px; margin-bottom: 24px; }
+    .tab-content.active { display: block; }
+
+    .skill-links { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .skill-links a { font-size: 12px; padding: 8px 16px; border: 1px solid var(--black); text-decoration: none; color: var(--black); }
+    .skill-links a:hover { background: var(--black); color: var(--white); }
+    .back-link { font-size: 13px; color: var(--gray-600); text-decoration: none; display: inline-block; margin-top: 24px; }
+    .back-link:hover { color: var(--black); }
+    footer { border-top: 1px solid var(--black); padding: 24px; text-align: center; }
+    footer p { font-size: 11px; color: var(--gray-600); }
+    footer a { color: var(--gray-600); }
+    @media (max-width: 768px) {
+      .skill-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .skill-hero h1 { font-size: 18px; }
+      .skill-content pre { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon"><img src="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/opc-logo.svg" alt="OPC Skills logo" width="32" height="32"></div>
+        <span class="logo-text">OPC Skills</span>
+      </a>
+      <nav>
+        <a href="https://github.com/ReScienceLab/opc-skills" target="_blank">GitHub</a>
+        <a href="mailto:hi@opc.dev">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="breadcrumb">
+      <a href="/">Home</a> &gt; <a href="/">Skills</a> &gt; ${skill.name}
+    </div>
+    <div class="skill-hero">
+      <img src="${skill.logo || `https://cdn.simpleicons.org/${skill.icon}/${skill.color}`}" alt="${skill.name} logo">
+      <div>
+        <h1>${skill.name}<span class="version">v${skill.version}</span></h1>
+        ${skill.auth.required ? '<span class="auth-tag paid">API Key Required</span>' : '<span class="auth-tag free">Free</span>'}
+      </div>
+    </div>
+    <p class="skill-desc">${skill.description}</p>
+    <div class="skill-triggers">${skill.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
+    ${skill.dependencies && skill.dependencies.length > 0 ? `<p style="font-size:12px;color:var(--gray-600);margin-bottom:16px;">Dependencies: ${skill.dependencies.map(d => `<a href="/skills/${d}">${d}</a>`).join(', ')}</p>` : ''}
+    
+    <div class="skill-tabs">
+      ${exampleContent ? `<button class="skill-tab active" onclick="switchTab(this, 'example')">Example</button>` : ''}
+      <button class="skill-tab ${exampleContent ? '' : 'active'}" onclick="switchTab(this, 'docs')">Documentation</button>
+    </div>
+    
+    ${exampleContent ? `
+    <div id="tab-example" class="tab-content active">
+      <div class="skill-content">${exampleContent}</div>
+    </div>
+    ` : ''}
+    
+    <div id="tab-docs" class="tab-content ${exampleContent ? '' : 'active'}">
+      <div class="skill-content">${content}</div>
+    </div>
+    <div class="skill-links">
+      <a href="${skill.links.github}" target="_blank">GitHub</a>
+      ${skill.links.docs ? `<a href="${skill.links.docs}" target="_blank">Docs</a>` : ''}
+      ${skill.links.example ? `<a href="${skill.links.example}" target="_blank">Example</a>` : ''}
+    </div>
+    <a href="/" class="back-link">&larr; Back to all skills</a>
+  </main>
+  <footer>
+    <p>2026 <a href="https://rescience.com" target="_blank">ReScience Lab</a> | <a href="mailto:hi@opc.dev">hi@opc.dev</a></p>
+  </footer>
+  <script>
+    function switchTab(btn, tabId) {
+      document.querySelectorAll('.skill-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>`;
+
+  return new Response(html, {
+    headers: { 'Content-Type': 'text/html;charset=UTF-8', 'Cache-Control': 'public, max-age=300' }
+  });
 }

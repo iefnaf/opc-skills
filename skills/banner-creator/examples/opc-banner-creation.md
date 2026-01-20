@@ -1,89 +1,39 @@
 # Example: OPC Skills Banner Creation
 
-This documents the actual banner creation process for opc.dev.
+**User:** Create a banner for opc.dev GitHub README. Should match the existing pixel art logo style.
 
-## Requirements Gathered
+**Agent:** I'll create a banner for OPC Skills. Let me confirm the requirements:
 
-**Project:** OPC Skills (opc.dev)
-**Purpose:** GitHub README banner
-**Target size:** 1280×640 (2:1 ratio)
-**Style:** Pixel art, matching existing crowned king logo
-**Text:** "opc.dev" and "Agent Skills"
-**Character:** Pixel art crowned king from logo
+1. Target size: GitHub README banner (typically 1280x640, 2:1 ratio)
+2. Style: Pixel art to match existing crowned king logo
+3. Text: "opc.dev" and "Agent Skills"
+4. Character: Include the pixel art crowned king from logo
 
-## Generation Process
+**User:** Yes, that's correct. Please generate some options.
 
-### Round 1: Initial 16:9 Banners
+**Agent:** Generating banner variations at 16:9 ratio first...
 
-First generated 20 banners at 16:9 ratio with character consistency:
+Here are the generated banners:
 
-```
-nano-banana-pro___generate_image(
-  prompt: "Wide pixel art banner featuring a pixel art crowned solopreneur king character, 
-           8-bit retro game style, the character is coding on a laptop with a golden crown, 
-           text 'opc.dev' prominently displayed, 'Agent Skills' as tagline, 
-           dark purple/blue gradient background with pixel stars",
-  aspectRatio: "16:9",
-  image: "/path/to/opc-logo.svg",
-  fileName: ".skill-archive/banner-creator/2026-01-19-opc-banner/banner-01.png"
-)
-```
+![Banner 01](/skills/banner-creator/examples/images/banner-01.png)
+![Banner 02](/skills/banner-creator/examples/images/banner-02.png)
+![Banner 03](/skills/banner-creator/examples/images/banner-03.png)
+![Banner 04](/skills/banner-creator/examples/images/banner-04.png)
+![Banner 05](/skills/banner-creator/examples/images/banner-05.png)
+![Banner 06](/skills/banner-creator/examples/images/banner-06.png)
 
-### Round 2: 2:1 GitHub Format
+**User:** I like the style. But GitHub banners work best at 2:1 ratio. Can you generate some at that ratio?
 
-User noted GitHub banners work best at 2:1 ratio. Generated 20 more at 21:9 (widest available):
+**Agent:** Generating at 2:1 ratio for GitHub:
 
-```
-nano-banana-pro___generate_image(
-  prompt: "Ultra-wide pixel art banner, 8-bit retro game style, 
-           pixel crowned king character on the left side holding a laptop, 
-           'opc.dev' in large pixel font, 'Agent Skills' subtitle, 
-           gradient background from deep purple to blue, pixel art style throughout",
-  aspectRatio: "21:9",
-  image: "/path/to/opc-logo.svg",
-  fileName: ".skill-archive/banner-creator/2026-01-19-opc-banner/banner-21-01.png"
-)
-```
+![GitHub Banner 01](/skills/banner-creator/examples/images/github-banner-01.png)
+![GitHub Banner 02](/skills/banner-creator/examples/images/github-banner-02.png)
+![GitHub Banner 03](/skills/banner-creator/examples/images/github-banner-03.png)
 
-### Cropping to 2:1
+**User:** Perfect! Let's use the third one.
 
-Cropped all 21:9 banners to 2:1 (1280×640):
+**Agent:** Here's the final banner:
 
-```bash
-python3 scripts/crop_banner.py banner-21-01.png banner-21-01-cropped.png --ratio 2:1 --width 1280
-```
+![Final Banner](/skills/banner-creator/examples/images/opc-banner-final.png)
 
-## User Selection
-
-User selected **#03** from the cropped 2:1 banners:
-- Featured pixel crowned king with laptop
-- "opc.dev" text clearly visible
-- "Agent Skills" tagline included
-- Clean dark gradient background
-
-## Final Deliverables
-
-| File | Size | Description |
-|------|------|-------------|
-| banner-03.png | 2016×864 | Original 21:9 |
-| banner-03-cropped.png | 1280×640 | Final 2:1 GitHub banner |
-
-## Integration
-
-Banner was added to:
-1. `README.md` - Centered at top
-2. `website/worker.js` - Hero section with max-width: 560px
-
-```markdown
-<!-- README.md -->
-<p align="center">
-  <img src="website/opc-banner.png" alt="OPC Skills" width="640">
-</p>
-```
-
-## Tips Learned
-
-1. **Generate wider, crop narrower** - 21:9 gives flexibility to crop to any target
-2. **Character consistency** - Use `image` parameter to maintain logo character
-3. **Text placement** - Request text on specific side if cropping will occur
-4. **Multiple rounds** - First round explores styles, second round refines winner
+The banner is ready to use in your README!
