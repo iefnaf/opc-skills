@@ -37,12 +37,20 @@ Comprehensive SEO and GEO (Generative Engine Optimization) for websites. Optimiz
 
 Get the target URL and analyze current SEO/GEO status.
 
+**Basic SEO Audit (Free):**
+```bash
+python3 scripts/seo_audit.py "https://example.com"
+```
+**Use this for**: Quick technical SEO check (title, meta, H1, robots, sitemap, load time). No API needed.
+
+---
+
 **Check Meta Tags:**
 ```bash
 curl -sL "https://example.com" | grep -E "<title>|<meta name=\"description\"|<meta property=\"og:|application/ld\+json" | head -20
 ```
 
-**Use this for**: Quick check of essential meta tags and schema markup on any webpage. This is the first step in SEO audits.
+**Use this for**: Quick check of essential meta tags and schema markup on any webpage.
 
 ---
 
