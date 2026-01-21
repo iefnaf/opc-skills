@@ -571,6 +571,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
   </header>
 
   <section class="hero" aria-label="Quick install instructions">
+    <img src="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/opc-banner.png" alt="OPC Skills - AI Agent Skills for Solopreneurs" class="hero-banner" fetchpriority="high" decoding="async">
     <h1>AI Agent Skills for Solopreneurs</h1>
     <p class="subtitle">Extend Claude Code, Cursor, Droid, and more with automation skills</p>
     <div class="hero-badges">
