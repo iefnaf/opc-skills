@@ -76,71 +76,25 @@ npx skills add ReScienceLab/opc-skills --skill reddit --skill twitter --skill do
 
 ## Supported AI Tools
 
-OPC Skills work with 16+ AI coding agents:
+OPC Skills work with 16+ AI coding agents via `npx skills add`:
 
-| Agent | `npx` Support | Advanced Install |
-|-------|:-------------:|:----------------:|
-| Claude Code | ✅ | ✅ |
-| Cursor | ✅ | ✅ |
-| Factory Droid | ✅ | ✅ |
-| Windsurf | ✅ | ✅ |
-| OpenCode | ✅ | ✅ |
-| Codex | ✅ | ✅ |
-| GitHub Copilot | ✅ | ❌ |
-| Gemini CLI | ✅ | ❌ |
-| Goose | ✅ | ❌ |
-| Kilo Code | ✅ | ❌ |
-| Roo Code | ✅ | ❌ |
-| Trae | ✅ | ❌ |
-| And more... | ✅ | - |
+- **Claude Code** - Desktop app for AI-assisted coding
+- **Cursor** - AI-first code editor
+- **Factory Droid** - AI software engineering agent
+- **Windsurf** - AI-powered IDE
+- **OpenCode** - Open-source AI coding assistant
+- **Codex** - AI code generation tool
+- **GitHub Copilot** - AI pair programmer
+- **Gemini CLI** - Command-line AI assistant
+- **Goose** - Terminal-based AI agent
+- **Kilo Code** - Lightweight AI coding tool
+- **Roo Code** - AI code assistant
+- **Trae** - AI development companion
+- **And more...**
 
-See the [full compatibility list](https://github.com/vercel-labs/add-skill#available-agents) for installation paths.
+See the [full compatibility list](https://github.com/vercel-labs/add-skill#available-agents) for all supported tools.
 
 ---
-
-## Manual Installation
-
-### Skill Directory Locations
-
-| Tool | Global Directory | Project Directory |
-|------|------------------|-------------------|
-| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
-| Factory Droid | `~/.factory/skills/` | `.factory/skills/` |
-| Cursor | `~/.cursor/skills/` | `.cursor/skills/` |
-| OpenCode | `~/.config/opencode/skills/` | - |
-| Codex | `~/.codex/skills/` | `.codex/skills/` |
-
-### Manual Copy
-
-```bash
-# Clone repo
-git clone https://github.com/ReScienceLab/opc-skills.git
-
-# Copy to your tool's skills directory
-# Example for Claude Code (global):
-mkdir -p ~/.claude/skills
-cp -r opc-skills/skills/reddit ~/.claude/skills/
-cp -r opc-skills/skills/twitter ~/.claude/skills/
-cp -r opc-skills/skills/domain-hunter ~/.claude/skills/
-
-# Example for Factory Droid (project):
-mkdir -p .factory/skills
-cp -r opc-skills/skills/reddit .factory/skills/
-```
-
-### Claude Code Plugin
-
-```bash
-/plugin marketplace add ReScienceLab/opc-skills
-```
-
-### Claude.ai
-
-Upload skill folders via [Claude.ai settings](https://support.claude.com/en/articles/12512180-using-skills-in-claude#h_a4222fa77b).
-
-### Claude API
-
-See the [Skills API Quickstart](https://docs.claude.com/en/api/skills-guide#creating-a-skill).
 
 ## Creating New Skills
 
