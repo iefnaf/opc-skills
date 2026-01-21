@@ -181,7 +181,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       "name": "How do I install OPC Skills?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Run this command in your terminal: curl -fsSL opc.dev/install.sh | bash -s -- -t claude all. Replace 'claude' with your preferred platform (droid, cursor, opencode, codex) and 'all' with a specific skill name if desired."
+        "text": "Run this command in your terminal: npx skills add ReScienceLab/opc-skills. For a specific skill, use npx skills add ReScienceLab/opc-skills --skill reddit. Works with Claude Code, Cursor, Windsurf, Droid, and 12+ other AI tools."
       }
     });
     faqItems.push({
@@ -197,7 +197,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       "name": "How to extend Claude Code with custom skills?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "You can extend Claude Code with custom skills by installing OPC Skills using: curl -fsSL opc.dev/install.sh | bash -s -- -t claude [skill-name]. Skills are stored in ~/.claude/skills/ for user-level or .claude/skills/ for project-level. Each skill is a markdown file with instructions that Claude Code can follow."
+        "text": "You can extend Claude Code with custom skills by installing OPC Skills using: npx skills add ReScienceLab/opc-skills. Skills are stored in ~/.claude/skills/ for user-level or .claude/skills/ for project-level. Each skill is a markdown file with instructions that Claude Code can follow."
       }
     });
     faqItems.push({
@@ -221,7 +221,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       "name": "How do I install Claude Code extensions?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Copy the skill URL from OPC Skills, open Claude Code settings, paste into 'Add Skill', and click install. Each skill takes less than 30 seconds to set up. Or use the one-click install command: curl -fsSL opc.dev/install.sh | bash -s -- -t claude [skill-name]"
+        "text": "Use the one-command install: npx skills add ReScienceLab/opc-skills. This works for Claude Code and 12+ other AI coding assistants. Browse available skills at https://skills.sh/ReScienceLab/opc-skills."
       }
     });
     faqItems.push({
@@ -229,7 +229,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       "name": "Are these skills compatible with Cursor AI?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes! Most OPC Skills work with Claude Code, Cursor, Codex, and other AI coding assistants that support the MCP (Model Context Protocol) standard. Simply change the -t parameter during installation: -t cursor for Cursor AI, -t codex for Codex, or -t claude for Claude Code."
+        "text": "Yes! OPC Skills work with Claude Code, Cursor, Codex, Windsurf, Droid, and 12+ other AI coding assistants. Just run npx skills add ReScienceLab/opc-skills and the CLI will automatically detect your installed tools."
       }
     });
     faqItems.push({
@@ -300,7 +300,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       ]
     };
 
-    // Generate skill cards
+    // Generate skill cards with simplified npx install command
     const skillCards = skills.map(s => `
         <div class="skill-card" id="skill-${s.name}">
           <div class="skill-header">
@@ -323,35 +323,15 @@ Sitemap: https://opc.dev/sitemap.xml`, {
           ${s.dependencies && s.dependencies.length > 0 ? `<div class="skill-deps"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg> Depends on: ${s.dependencies.map(d => `<span class="dep-tag">${d}</span>`).join('')}</div>` : ''}
           <div class="skill-triggers">${s.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
           <div class="install-section">
-            <div class="install-tabs level-tabs">
-              <button class="tab-btn active" onclick="switchLevel(this, 'user')">User-level</button>
-              <button class="tab-btn" onclick="switchLevel(this, 'project')">Project-level</button>
-            </div>
-            <div class="tab-hint user-hint">Available across ALL your projects</div>
-            <div class="tab-hint project-hint" style="display:none">Shared with team in this repo</div>
-            <div class="install-tabs platform-tabs">
-              <button class="tab-btn active" data-platform="claude" onclick="switchPlatform(this, 'claude')">Claude</button>
-              <button class="tab-btn" data-platform="droid" onclick="switchPlatform(this, 'droid')">Droid</button>
-              <button class="tab-btn" data-platform="opencode" onclick="switchPlatform(this, 'opencode')">OpenCode</button>
-              <button class="tab-btn" data-platform="codex" onclick="switchPlatform(this, 'codex')">Codex</button>
-              <button class="tab-btn" data-platform="cursor" onclick="switchPlatform(this, 'cursor')">Cursor</button>
-            </div>
             <div class="install-cmd">
-              <code class="cmd-display" 
-                data-user-claude="${s.install.user?.claude || ''}"
-                data-user-droid="${s.install.user?.droid || ''}"
-                data-user-opencode="${s.install.user?.opencode || ''}"
-                data-user-codex="${s.install.user?.codex || ''}"
-                data-user-cursor=""
-                data-project-claude="${s.install.project?.claude || ''}"
-                data-project-droid="${s.install.project?.droid || ''}"
-                data-project-opencode="${s.install.project?.opencode || ''}"
-                data-project-codex="${s.install.project?.codex || ''}"
-                data-project-cursor="${s.install.project?.cursor || ''}"
-              >${s.install.user?.claude || ''}</code>
-              <button class="copy-btn" onclick="copyCmdNew(this)">Copy</button>
+              <code class="cmd-display">npx skills add ReScienceLab/opc-skills --skill ${s.name}</code>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('npx skills add ReScienceLab/opc-skills --skill ${s.name}').then(() => { this.textContent='Copied!'; setTimeout(() => this.textContent='Copy', 1000); })">Copy</button>
             </div>
-            <div class="platform-note cursor-note" style="display:none">Cursor only supports project-level</div>
+            ${s.dependencies && s.dependencies.length > 0 ? `
+            <div class="platform-note" style="background:#fff3cd;border-left:3px solid #ffc107;padding:8px;margin-top:8px;font-size:11px;color:#856404;">
+              <strong>Note:</strong> Install with dependencies:<br>
+              <code style="font-size:10px;display:block;margin-top:4px;">npx skills add ReScienceLab/opc-skills --skill ${s.dependencies.concat(s.name).join(' --skill ')}</code>
+            </div>` : ''}
           </div>
           <details class="commands-section">
             <summary>Example Commands</summary>
@@ -378,7 +358,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
   <meta http-equiv="Content-Language" content="en">
   <link rel="canonical" href="https://opc.dev/">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-  <meta property="og:title" content="Claude Code Skills for Solopreneurs | AI Tools for One-Person Companies">
+  <meta property="og:title" content="Claude Code Skills for Solopreneurs | AI Tools">
   <meta property="og:description" content="10+ Claude Code skills for solopreneurs and indie hackers. Twitter search, Reddit analysis, domain finder. Built for one-person companies. 100% open source.">
   <meta property="og:image" content="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/og-image.png">
   <meta property="og:url" content="https://opc.dev/">
@@ -549,7 +529,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       .platform-tabs .tab-btn:last-child { border-radius: 0 4px 4px 0; }
       
       .install-cmd { flex-direction: column; gap: 8px; }
-      .install-cmd code { width: 100%; font-size: 8px; padding: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; display: block; }
+      .install-cmd code { width: 100%; font-size: 7px; padding: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; display: block; }
       .install-cmd .copy-btn { width: 100%; padding: 10px; }
       
       .commands-list code { font-size: 9px; white-space: nowrap; overflow-x: auto; display: block; }
@@ -590,33 +570,24 @@ Sitemap: https://opc.dev/sitemap.xml`, {
     </div>
   </header>
 
-  <section class="hero" role="banner">
-    <img src="https://raw.githubusercontent.com/ReScienceLab/opc-skills/main/website/opc-banner.png" alt="OPC Skills - AI Agent Skills for Solopreneurs and Indie Hackers" class="hero-banner" fetchpriority="high" decoding="async">
-    <h1>Claude Code Skills for<br>Solopreneurs</h1>
-    <p class="subtitle">AI extensions for <strong>one-person companies</strong> and <strong>indie hackers</strong>. Add Twitter search, Reddit analysis, domain finder, and SEO tools to Claude Code, Cursor, and 3 more platforms. <strong>${skills.length} curated skills</strong> used by developers worldwide.</p>
-    <div class="stats-bar">
-      <span><strong>${skills.length}</strong> Skills</span>
-      <span><strong>5</strong> Platforms</span>
-      <span><strong>&lt;30 sec</strong> Setup</span>
+  <section class="hero" aria-label="Quick install instructions">
+    <h1>AI Agent Skills for Solopreneurs</h1>
+    <p class="subtitle">Extend Claude Code, Cursor, Droid, and more with automation skills</p>
+    <div class="hero-badges">
+      <span><strong>${skills.length}</strong> Skills Available</span>
+      <span><strong>16+</strong> AI Tools Supported</span>
       <span><strong>100%</strong> Free & Open Source</span>
       <span><strong>MIT</strong> License</span>
     </div>
     <div class="hero-install">
-      <div class="hero-tabs hero-level-tabs">
-        <button class="hero-tab active" data-level="user">User-level</button>
-        <button class="hero-tab" data-level="project">Project-level</button>
-      </div>
-      <div class="hero-tabs hero-tool-tabs">
-        <button class="hero-tab active" data-tool="claude">Claude</button>
-        <button class="hero-tab" data-tool="droid">Droid</button>
-        <button class="hero-tab" data-tool="opencode">OpenCode</button>
-        <button class="hero-tab" data-tool="codex">Codex</button>
-        <button class="hero-tab" data-tool="cursor">Cursor</button>
-      </div>
+      <p style="font-size:13px;margin-bottom:12px;color:var(--gray-700);">Works with Claude Code, Cursor, Windsurf, Droid, and 12+ other AI tools</p>
       <div class="hero-cmd">
-        <code id="hero-cmd-code" data-cmd="curl -fsSL opc.dev/install.sh | bash -s -- -t claude all">curl -fsSL opc.dev/install.sh | bash -s -- -t claude all</code>
+        <code id="hero-cmd-code" data-cmd="npx skills add ReScienceLab/opc-skills">npx skills add ReScienceLab/opc-skills</code>
         <button class="copy-btn" onclick="copyHeroCmd(this)">Copy</button>
       </div>
+      <p style="font-size:11px;margin-top:8px;color:var(--gray-600);">
+        <a href="https://skills.sh/ReScienceLab/opc-skills" target="_blank" rel="noopener" style="color:var(--purple);">Browse on skills.sh →</a>
+      </p>
     </div>
   </section>
 
@@ -643,7 +614,7 @@ Sitemap: https://opc.dev/sitemap.xml`, {
       <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
         <h3 itemprop="name">How do I install OPC Skills?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Run this command in your terminal: <code>curl -fsSL opc.dev/install.sh | bash -s -- -t claude all</code>. Replace <code>claude</code> with your preferred platform (droid, cursor, opencode, codex) and <code>all</code> with a specific skill name if desired.</p>
+          <p itemprop="text">Run this command in your terminal: npx skills add ReScienceLab/opc-skills. For a specific skill, use npx skills add ReScienceLab/opc-skills --skill reddit. Works with Claude Code, Cursor, Windsurf, Droid, and 12+ other AI tools.</p>
         </div>
       </div>
       <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
@@ -653,33 +624,21 @@ Sitemap: https://opc.dev/sitemap.xml`, {
         </div>
       </div>
       <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-        <h3 itemprop="name">Is OPC Skills free to use?</h3>
-        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Yes, OPC Skills is <strong>100% free and open source</strong> under the MIT license. Some individual skills may require API keys for third-party services (like Twitter API or Reddit API), but the skills themselves are free to install and use.</p>
-        </div>
-      </div>
-      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-        <h3 itemprop="name">What are Claude Code skills for solopreneurs?</h3>
-        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Claude Code skills for solopreneurs are AI extensions that help <strong>one-person companies</strong> work smarter. They add capabilities like <strong>domain search</strong>, <strong>Twitter analysis</strong>, and <strong>Reddit research</strong> to Claude Code. Each skill is built specifically for <strong>indie hackers</strong> who need to do more with less time and resources.</p>
-        </div>
-      </div>
-      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
         <h3 itemprop="name">How do I install Claude Code extensions?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Copy the skill URL from OPC Skills, open Claude Code settings, paste into 'Add Skill', and click install. Each skill takes <strong>less than 30 seconds</strong> to set up. Or use the one-click command: <code>curl -fsSL opc.dev/install.sh | bash -s -- -t claude [skill-name]</code></p>
+          <p itemprop="text">Use the one-command install: npx skills add ReScienceLab/opc-skills. This works for Claude Code and 12+ other AI coding assistants. Browse available skills at https://skills.sh/ReScienceLab/opc-skills.</p>
         </div>
       </div>
       <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
         <h3 itemprop="name">Are these skills compatible with Cursor AI?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Yes! Most OPC Skills work with <strong>Claude Code</strong>, <strong>Cursor</strong>, <strong>Codex</strong>, and other AI coding assistants that support the MCP (Model Context Protocol) standard. Simply change the <code>-t</code> parameter: <code>-t cursor</code> for Cursor AI, <code>-t codex</code> for Codex.</p>
+          <p itemprop="text">Yes! OPC Skills work with Claude Code, Cursor, Codex, Windsurf, Droid, and 12+ other AI coding assistants. Just run npx skills add ReScienceLab/opc-skills and the CLI will automatically detect your installed tools.</p>
         </div>
       </div>
       <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
         <h3 itemprop="name">How to extend Claude Code with custom skills?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text">Install skills using: <code>curl -fsSL opc.dev/install.sh | bash -s -- -t claude [skill-name]</code>. Skills are stored in <code>~/.claude/skills/</code> for user-level or <code>.claude/skills/</code> for project-level. Each skill is a markdown file with instructions that Claude Code follows.</p>
+          <p itemprop="text">Install skills using: npx skills add ReScienceLab/opc-skills. Skills are stored in ~/.claude/skills/ for user-level or .claude/skills/ for project-level. Each skill is a markdown file with instructions that Claude Code follows.</p>
         </div>
       </div>
     </div>
@@ -972,7 +931,7 @@ function getFallbackConfig() {
             codex: "curl -fsSL opc.dev/install.sh | bash -s -- -t codex -p producthunt"
           }
         },
-        commands: ["python3 scripts/get_posts.py --limit 20"],
+        commands: ["python3 scripts/search_posts.py --limit 20"],
         links: { github: "https://github.com/ReScienceLab/opc-skills/tree/main/skills/producthunt" }
       },
       {
@@ -1125,7 +1084,7 @@ async function renderSkillPage(skillName, ctx) {
             "name": `How do I install ${skill.name}?`,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `Install ${skill.name} by running: curl -fsSL opc.dev/install.sh | bash -s -- -t claude ${skill.name}. Replace 'claude' with your preferred platform (droid, cursor, opencode, codex).`
+              "text": `Install ${skill.name} by running: npx skills add ReScienceLab/opc-skills --skill ${skill.name}. Replace 'claude' with your preferred platform (droid, cursor, opencode, codex).`
             }
           },
           {
@@ -1181,7 +1140,7 @@ async function renderSkillPage(skillName, ctx) {
     .logo-icon img { width: 32px; height: 32px; }
     .logo-text { font-family: var(--font-pixel); font-size: 10px; }
     nav a { font-size: 12px; color: var(--gray-600); text-decoration: none; margin-left: 16px; }
-    nav a:hover { color: var(--black); }
+    nava:hover { color: var(--black); }
     main { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
     .breadcrumb { font-size: 12px; color: var(--gray-600); margin-bottom: 24px; }
     .breadcrumb a { color: var(--gray-600); text-decoration: none; }
@@ -1267,7 +1226,20 @@ async function renderSkillPage(skillName, ctx) {
     </article>
     <p class="skill-desc" itemprop="description">${skill.description}</p>
     <div class="skill-triggers">${skill.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
-    ${skill.dependencies && skill.dependencies.length > 0 ? `<p style="font-size:12px;color:var(--gray-600);margin-bottom:16px;">Dependencies: ${skill.dependencies.map(d => `<a href="/skills/${d}">${d}</a>`).join(', ')}</p>` : ''}
+    ${skill.dependencies && skill.dependencies.length > 0 ? `<p style="font-size:12px;color:var(--gray-600);margin-bottom:16px;">⚠️ Dependencies: ${skill.dependencies.map(d => `<a href="/skills/${d}">${d}</a>`).join(', ')}</p>` : ''}
+    
+    <div class="install-section">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--gray-900);">Quick Install</h3>
+      <div class="install-box" style="background:var(--gray-50);border-radius:8px;padding:16px;margin-bottom:16px;">
+        <code class="install-cmd" style="font-size:13px;color:var(--gray-800);word-break:break-all;display:block;margin-bottom:12px;">npx skills add ReScienceLab/opc-skills --skill ${skillName}</code>
+        <button class="copy-btn" style="background:var(--purple);color:white;border:none;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;" onclick="navigator.clipboard.writeText('npx skills add ReScienceLab/opc-skills --skill ${skillName}').then(() => { this.textContent='Copied!'; setTimeout(() => this.textContent='Copy Command', 1000); })">Copy Command</button>
+      </div>
+      ${skill.dependencies && skill.dependencies.length > 0 ? `
+      <div class="install-note" style="background:#fff3cd;border-left:3px solid #ffc107;padding:12px;border-radius:4px;font-size:12px;color:#856404;">
+        <strong>Note:</strong> This skill requires <code>${skill.dependencies.join(', ')}</code>. Install all together:<br>
+        <code style="margin-top:8px;display:block;">npx skills add ReScienceLab/opc-skills --skill ${skill.dependencies.concat(skillName).join(' --skill ')}</code>
+      </div>` : ''}
+    </div>
     
     <div class="skill-tabs">
       ${exampleContent ? `<button class="skill-tab active" onclick="switchTab(this, 'example')">Example</button>` : ''}

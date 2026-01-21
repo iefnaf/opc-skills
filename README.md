@@ -43,9 +43,7 @@ For more information about the Agent Skills standard, see [agentskills.io](http:
 
 ## Quick Install
 
-### 🚀 Universal Install (Works with 16+ AI Tools)
-
-Install with one command - works with Claude Code, Cursor, Windsurf, Droid, and more:
+Install with one command - works with Claude Code, Cursor, Windsurf, Droid, and 12+ other AI tools:
 
 ```bash
 # Install all skills
@@ -55,49 +53,23 @@ npx skills add ReScienceLab/opc-skills
 npx skills add ReScienceLab/opc-skills --skill reddit
 
 # Install to specific agent
-npx skills add ReScienceLab/opc-skills -a droid -a claude-code
+npx skills add ReScienceLab/opc-skills -a droid
 ```
 
 Browse and discover skills at **[skills.sh](https://skills.sh/ReScienceLab/opc-skills)** 🎯
 
-> **Note:** For skills with dependencies (e.g., `domain-hunter` needs `twitter` + `reddit`), use the Advanced Install method below for automatic dependency resolution.
+### Skills with Dependencies
 
----
+Some skills require other skills to function properly:
 
-### ⚙️ Advanced Install (With Dependency Management)
+- **domain-hunter** → requires `twitter` and `reddit`
+- **logo-creator** → requires `nanobanana`
+- **banner-creator** → requires `nanobanana`
 
-For power users who need dependency resolution, batch operations, and custom directories:
-
-```bash
-# Clone the repo
-git clone https://github.com/ReScienceLab/opc-skills.git
-cd opc-skills
-
-# Interactive install
-./install.sh
-
-# Or specify tool and skill directly
-./install.sh -t claude all           # All skills to Claude Code
-./install.sh -t droid twitter        # Twitter skill to Factory Droid
-./install.sh -t cursor -p reddit     # Reddit to current project (Cursor)
-./install.sh -t custom -d ~/.my-agent/skills all
-```
-
-**Why use the advanced installer?**
-- ✅ Auto-installs dependencies (e.g., `domain-hunter` → `twitter`, `reddit`)
-- ✅ Batch install all skills with one command
-- ✅ Custom directory support
-- ✅ Project-level vs global install options
-- ✅ Beautiful dependency tree visualization
-
-### One-liner Install
+Install them together:
 
 ```bash
-# Install all skills to Claude Code (global)
-curl -fsSL opc.dev/install.sh | bash -s -- -t claude all
-
-# Install specific skill to Factory Droid
-curl -fsSL opc.dev/install.sh | bash -s -- -t droid reddit
+npx skills add ReScienceLab/opc-skills --skill reddit --skill twitter --skill domain-hunter
 ```
 
 ---
