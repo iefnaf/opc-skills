@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://opc.dev"><img src="https://img.shields.io/badge/Website-opc.dev-black?style=flat-square" alt="Website"></a>
+  <a href="https://skills.sh/ReScienceLab/opc-skills"><img src="https://img.shields.io/badge/Browse-skills.sh-blue?style=flat-square" alt="Browse on skills.sh"></a>
   <a href="https://github.com/ReScienceLab/opc-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License"></a>
   <a href="https://github.com/ReScienceLab/opc-skills/stargazers"><img src="https://img.shields.io/github/stars/ReScienceLab/opc-skills?style=flat-square" alt="GitHub Stars"></a>
 </p>
