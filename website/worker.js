@@ -1768,7 +1768,7 @@ async function renderSkillPage(skillName, ctx) {
       </div>
     </article>
     <p class="skill-desc" itemprop="description">${skill.description}</p>
-    ${allKeys.length > 0 ? `<div class="skill-auth-info" style="margin:12px 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#6366f1" style="flex-shrink:0;margin-top:2px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><div style="display:flex;flex-direction:column;gap:4px;">${allKeys.map(k => `<div><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:12px;">${k.env}</code> <a href="${k.url}" target="_blank" rel="noopener noreferrer" style="color:#6366f1;font-size:13px;">${k.url.replace('https://', '')}</a>${k.from ? ` <span style="color:#9ca3af;font-size:11px;">(from ${k.from})</span>` : ''}${k.optional ? ' <span style="color:#9ca3af;font-size:11px;">(optional)</span>' : ''}</div>`).join('')}</div></div>` : ''}
+    ${allKeys.length > 0 ? `<div class="skill-auth-info" style="margin:12px 0;display:flex;align-items:flex-start;gap:8px;padding:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#6366f1" style="flex-shrink:0;margin-top:2px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg><div style="display:flex;flex-direction:column;gap:6px;">${allKeys.map(k => `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><code style="background:#fff;padding:3px 8px;border-radius:4px;font-size:12px;border:1px solid #e5e7eb;">${k.env}</code><a href="${k.url}" target="_blank" rel="noopener noreferrer" style="color:#6366f1;font-size:13px;">${k.url.replace('https://', '')}</a>${k.from ? `<span style="color:#9ca3af;font-size:11px;">(from ${k.from})</span>` : ''}${k.optional ? '<span style="color:#9ca3af;font-size:11px;">(optional)</span>' : ''}</div>`).join('')}</div></div>` : ''}
     ${skillDeps.length > 0 ? `<div class="skill-deps"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg> Depends on: ${skillDeps.map(d => `<a href="/skills/${d}" class="dep-tag" style="text-decoration:none;">${d}</a>`).join('')}</div>` : ''}
     <div class="skill-triggers">${skill.triggers.map(t => `<span class="trigger">${t}</span>`).join('')}</div>
     
@@ -2007,19 +2007,24 @@ async function renderBlogListPage(ctx) {
   
   const postCards = posts.map(post => `
     <article class="blog-card">
-      <div class="blog-meta">
-        <time datetime="${post.date}">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-        <span class="blog-category">${post.category}</span>
-      </div>
-      <h2><a href="/blog/${post.slug}">${post.title}</a></h2>
-      <p class="blog-description">${post.description}</p>
-      <div class="blog-footer">
-        <span class="read-time">⏱ ${post.readTime}</span>
-        <div class="blog-tags">
-          ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+      <a href="/blog/${post.slug}" class="blog-image-link">
+        <img src="${post.image}" alt="${post.title}" class="blog-image" loading="lazy">
+      </a>
+      <div class="blog-content">
+        <div class="blog-meta">
+          <time datetime="${post.date}">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+          <span class="blog-category">${post.category}</span>
         </div>
+        <h2><a href="/blog/${post.slug}">${post.title}</a></h2>
+        <p class="blog-description">${post.description}</p>
+        <div class="blog-footer">
+          <span class="read-time">⏱ ${post.readTime}</span>
+          <div class="blog-tags">
+            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+          </div>
+        </div>
+        <a href="/blog/${post.slug}" class="read-more">Read Article →</a>
       </div>
-      <a href="/blog/${post.slug}" class="read-more">Read Article →</a>
     </article>
   `).join('');
 
@@ -2092,11 +2097,33 @@ async function renderBlogListPage(ctx) {
     .blog-card {
       background: var(--white);
       border: 1px solid var(--black);
-      padding: 24px;
+      padding: 0;
       transition: box-shadow 0.2s;
+      overflow: hidden;
     }
     .blog-card:hover {
       box-shadow: 4px 4px 0 var(--black);
+    }
+    .blog-image-link {
+      display: block;
+      width: 100%;
+      border-bottom: 1px solid var(--black);
+      overflow: hidden;
+      max-height: 200px;
+    }
+    .blog-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: opacity 0.2s;
+    }
+    .blog-image-link:hover .blog-image {
+      opacity: 0.9;
+    }
+    .blog-content {
+      padding: 24px;
     }
     .blog-meta {
       display: flex;
@@ -2167,7 +2194,7 @@ async function renderBlogListPage(ctx) {
       .page-header h1 { font-size: 12px; }
       .page-header p { font-size: 11px; }
       .container { padding: 32px 16px; }
-      .blog-card { padding: 16px; }
+      .blog-content { padding: 16px; }
     }
   </style>
   
